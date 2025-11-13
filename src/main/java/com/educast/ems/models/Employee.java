@@ -29,6 +29,8 @@ public class Employee {
     private String gender;
 
     private String department;
+ 
+    private String designation; 
 
     private String role;
 

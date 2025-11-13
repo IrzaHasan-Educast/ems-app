@@ -10,9 +10,15 @@ public interface EmployeeService {
 
     Optional<Employee> getEmployeeById(Long id);
 
-    Employee createEmployee(Employee employee);
+//    Employee createEmployee(Employee employee);
 
     Employee updateEmployee(Long id, Employee employee);
 
     void deleteEmployee(Long id);
+
+	/**
+	 * Create employee and linked user account
+	 */
+	Employee createEmployee(Employee employee, String username, String password);
+    
 }

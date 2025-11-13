@@ -30,8 +30,12 @@ public class EmployeeController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','HR')")
-    public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeService.createEmployee(employee);
+    public Employee createEmployee(@RequestBody CreateEmployeeRequest request) {
+        return employeeService.createEmployeeWithUser(
+                request.getEmployee(),
+                request.getUsername(),
+                request.getPassword()
+        );
     }
 
     @PutMapping("/{id}")
