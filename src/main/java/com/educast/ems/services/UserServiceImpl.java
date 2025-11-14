@@ -1,8 +1,12 @@
 package com.educast.ems.services;
 
+import com.educast.ems.dto.UserResponse;
 import com.educast.ems.models.User;
 import com.educast.ems.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +18,10 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User updateUser(Long userId, String newUsername, String newPassword) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id " + userId));
+    public UserResponse updateUser(Long id, String newUsername, String newPassword) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id " + id));
 
-        // Update username if provided
         if (newUsername != null && !newUsername.isBlank() && !newUsername.equals(user.getUsername())) {
             userRepository.findByUsername(newUsername).ifPresent(u -> {
                 throw new IllegalArgumentException("Username already exists");
@@ -26,7 +29,6 @@ public class UserServiceImpl implements UserService {
             user.setUsername(newUsername);
         }
 
-        // Update password if provided
         if (newPassword != null && !newPassword.isBlank()) {
             if (newPassword.length() < 6) {
                 throw new IllegalArgumentException("Password must be at least 6 characters");
@@ -34,6 +36,25 @@ public class UserServiceImpl implements UserService {
             user.setPasswordHash(passwordEncoder.encode(newPassword));
         }
 
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        return mapToResponse(saved);
+        
     }
+    
+    @Override
+    public UserResponse getUserByEmployeeId(Long employeeId) {
+        User user = userRepository.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new RuntimeException("User not found for employee id " + employeeId));
+        return mapToResponse(user);
+    }
+
+    private UserResponse mapToResponse(User user) {
+        UserResponse res = new UserResponse();
+        res.setId(user.getId());
+        res.setUsername(user.getUsername());
+        res.setRole(user.getRole().name());
+        return res;
+    }
+
+
 }

@@ -1,13 +1,17 @@
 package com.educast.ems.controllers;
 
+import com.educast.ems.dto.EmployeeRequest;
+import com.educast.ems.dto.EmployeeResponse;
+import com.educast.ems.dto.UserResponse;
 import com.educast.ems.models.Employee;
 import com.educast.ems.services.EmployeeService;
+import com.educast.ems.services.UserService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/employees")
@@ -15,33 +19,45 @@ import java.util.Optional;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final UserService userService; // inject via constructor
+
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','HR')") // only ADMIN & HR can view all
+    @PreAuthorize("hasAnyRole('ADMIN','HR')")
     public List<Employee> getAllEmployees() {
         return employeeService.getAllEmployees();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','HR') or principal == #id") // employee can view own profile
-    public Optional<Employee> getEmployee(@PathVariable Long id) {
-        return employeeService.getEmployeeById(id);
+    @PreAuthorize("hasAnyRole('ADMIN','HR') or principal == #id")
+    public EmployeeResponse getEmployee(@PathVariable Long id) {
+        Employee emp = employeeService.getEmployeeById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        return mapToResponse(emp);
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','HR')")
-    public Employee createEmployee(@RequestBody CreateEmployeeRequest request) {
-        return employeeService.createEmployeeWithUser(
-                request.getEmployee(),
-                request.getUsername(),
-                request.getPassword()
-        );
+    public Employee createEmployee(@RequestBody EmployeeRequest dto) {
+        Employee employee = new Employee();
+        employee.setFullName(dto.getFullName());
+        employee.setEmail(dto.getEmail());
+        employee.setPhone(dto.getPhone());
+        employee.setGender(dto.getGender());
+        employee.setDepartment(dto.getDepartment());
+        employee.setDesignation(dto.getDesignation());
+        employee.setRole(dto.getRole());
+        employee.setJoiningDate(dto.getJoiningDate());
+        employee.setActive(dto.isActive());
+
+        return employeeService.createEmployee(employee, dto.getUsername(), dto.getPassword());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','HR')")
-    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
-        return employeeService.updateEmployee(id, employee);
+    public EmployeeResponse updateEmployee(@PathVariable Long id, @RequestBody EmployeeRequest dto) {
+        Employee updated = employeeService.updateEmployee(id, dto);
+        return mapToResponse(updated);
     }
 
     @DeleteMapping("/{id}")
@@ -49,4 +65,30 @@ public class EmployeeController {
     public void deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
     }
+
+    private EmployeeResponse mapToResponse(Employee employee) {
+        EmployeeResponse res = new EmployeeResponse();
+        res.setId(employee.getId());
+        res.setFullName(employee.getFullName());
+        res.setEmail(employee.getEmail());
+        res.setPhone(employee.getPhone());
+        res.setGender(employee.getGender());
+        res.setDepartment(employee.getDepartment());
+        res.setDesignation(employee.getDesignation());
+        res.setRole(employee.getRole());
+        res.setJoiningDate(employee.getJoiningDate());
+        res.setActive(employee.isActive());
+
+        // Fetch linked user safely
+        try {
+            UserResponse userResponse = userService.getUserByEmployeeId(employee.getId());
+            res.setUsername(userResponse.getUsername());
+        } catch (RuntimeException e) {
+            // user not found, ignore
+        }
+
+        return res;
+    }
+
 }
+

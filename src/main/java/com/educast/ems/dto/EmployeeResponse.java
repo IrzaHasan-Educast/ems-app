@@ -16,7 +16,5 @@ public class EmployeeResponse {
     private LocalDate joiningDate;
     private boolean active;
 
-    // Linked user info
-    private String username;
-    // password is intentionally excluded for security
+    private String username; // linked user username
 }

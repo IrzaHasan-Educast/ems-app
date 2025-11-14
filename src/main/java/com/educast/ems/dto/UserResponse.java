@@ -3,7 +3,9 @@ package com.educast.ems.dto;
 import lombok.Data;
 
 @Data
-public class UpdateUserRequest {
+public class UserResponse {
+	private Long id;
 	private String username;
-    private String password;
+	private String role;
+
 }
