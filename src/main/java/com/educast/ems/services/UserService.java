@@ -8,5 +8,7 @@ import com.educast.ems.models.User;
 public interface UserService {
     UserResponse getUserByEmployeeId(Long employeeId);
     UserResponse updateUser(Long userId, String username, String password);
+    User findByUsername(String username);
+
 }
 

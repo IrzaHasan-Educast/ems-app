@@ -13,5 +13,7 @@ public interface WorkSessionService {
 
     WorkSessionResponseDTO getSessionById(Long id);
 
+    WorkSessionResponseDTO getOngoingSessionByEmployee(Long employeeId);
+
     List<WorkSessionResponseDTO> getSessionsByEmployee(Long employeeId);
 }

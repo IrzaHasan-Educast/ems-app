@@ -4,12 +4,13 @@ import com.educast.ems.models.WorkSession;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WorkSessionRepository extends JpaRepository<WorkSession, Long> {
-    List<WorkSession> findByEmployeeIdAndClockInBetween(Long employeeId, LocalDate start, LocalDate end);
-    List<WorkSession> findByEmployeeId(Long employeeId);
-}
 
+    Optional<WorkSession> findFirstByEmployeeIdAndClockOutIsNullOrderByClockInDesc(Long employeeId);
+
+    List<WorkSession> findByEmployeeIdOrderByClockInDesc(Long employeeId);
+}

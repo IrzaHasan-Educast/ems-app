@@ -1,6 +1,10 @@
 package com.educast.ems.controllers;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.educast.ems.dto.WorkSessionRequestDTO;
+import com.educast.ems.dto.WorkSessionResponseDTO;
+import com.educast.ems.security.CustomUserDetails;
+import com.educast.ems.services.WorkSessionService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
@@ -18,21 +25,39 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WorkSessionController {
 
-    // private final WorkSessionService workSessionService; // ✅ Commented for now
+     private final WorkSessionService workSessionService; // ✅ Commented for now
 
-    @PostMapping("/clock-in")
-    public ResponseEntity<?> clockIn(@RequestBody WorkSessionRequestDTO requestDTO) {
-        // WorkSessionResponseDTO responseDTO = workSessionService.clockIn(requestDTO);
-        // return ResponseEntity.ok(responseDTO);
-        return ResponseEntity.ok("Service not implemented yet"); // Temporary
-    }
+     @PostMapping("/clock-in")
+     public ResponseEntity<WorkSessionResponseDTO> clockIn(
+             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    @PutMapping("/clock-out/{id}")
-    public ResponseEntity<?> clockOut(@PathVariable Long id) {
-        // WorkSessionResponseDTO responseDTO = workSessionService.clockOut(id);
-        // return ResponseEntity.ok(responseDTO);
-        return ResponseEntity.ok("Service not implemented yet"); // Temporary
-    }
+         Long employeeId = userDetails.getEmployeeId();
+
+         WorkSessionResponseDTO session = workSessionService.clockIn(new WorkSessionRequestDTO(
+                 employeeId, LocalDateTime.now(), null
+         ));
+
+         return ResponseEntity.ok(session);
+     }
+
+
+     // Clock Out
+     @PutMapping("/clock-out/{id}")
+     public ResponseEntity<WorkSessionResponseDTO> clockOut(@PathVariable Long id) {
+         WorkSessionResponseDTO session = workSessionService.clockOut(id);
+         return ResponseEntity.ok(session);
+     }
+
+     // Get Current Session (for page reload)
+     @GetMapping("/current")
+     public ResponseEntity<WorkSessionResponseDTO> getCurrentSession(
+             @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+         Long employeeId = userDetails.getEmployeeId();
+         WorkSessionResponseDTO session = workSessionService.getOngoingSessionByEmployee(employeeId);
+         if (session == null) return ResponseEntity.noContent().build();
+         return ResponseEntity.ok(session);
+     }
 
     @GetMapping("/employee/{employeeId}")
     public ResponseEntity<?> getByEmployee(@PathVariable Long employeeId) {
@@ -47,4 +72,7 @@ public class WorkSessionController {
         // return ResponseEntity.ok(responseDTO);
         return ResponseEntity.ok("Service not implemented yet"); // Temporary
     }
+    
+    
+
 }
