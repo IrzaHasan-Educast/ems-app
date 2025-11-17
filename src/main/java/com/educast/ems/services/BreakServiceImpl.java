@@ -56,7 +56,7 @@ public class BreakServiceImpl implements BreakService {
             throw new RuntimeException("Break start time missing");
         }
         Duration duration = Duration.between(brk.getStartTime(), brk.getEndTime());
-        brk.setDurationHours(duration.toMinutes() / 60.0);
+        brk.setDurationHours(duration.toSeconds() / 3600.0);
 
         Break saved = breakRepository.save(brk);
         return mapToDTO(saved);

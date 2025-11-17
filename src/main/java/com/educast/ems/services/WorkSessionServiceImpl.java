@@ -49,26 +49,26 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
     @Override
     public WorkSessionResponseDTO clockOut(Long id) {
+    	
         WorkSession session = workSessionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
-
+        
         if (session.getClockOut() != null) {
             throw new RuntimeException("Already clocked out");
         }
 
         LocalDateTime now = LocalDateTime.now();
+        endOngoingBreaks(session,now);
+
         session.setClockOut(now);
 
         // Calculate total hours
         Duration worked = Duration.between(session.getClockIn(), now);
-        session.setTotalHours(worked.toHours() + worked.toMinutesPart() / 60.0);
+        session.setTotalHours(worked.toHours() + worked.toMinutesPart() +worked.toSecondsPart() / 60.0);
 
         // Auto mark invalid if > 9 hrs
-        if (worked.toHours() > 9) {
-            session.setStatus("Auto Clocked Out / Invalid");
-        } else {
-        	session.setStatus("Completed");
-        }
+        session.setStatus(worked.toHours() > 9 ? "Auto Clocked Out / Invalid" : "Completed");
+
 
         WorkSession saved = workSessionRepository.save(session);
         return mapToDTO(saved);
@@ -146,6 +146,18 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
         dto.setIdleTime(null); // existing behavior
         return dto;
+    }
+
+    private void endOngoingBreaks(WorkSession session, LocalDateTime endTime) {
+        if (session.getBreaks() != null) {
+            session.getBreaks().stream()
+                .filter(b -> b.getEndTime() == null)
+                .forEach(b -> {
+                    b.setEndTime(endTime);
+                    Duration duration = Duration.between(b.getStartTime(), endTime);
+                    b.setDurationHours(duration.toMinutes() / 60.0);
+                });
+        }
     }
 
 }
