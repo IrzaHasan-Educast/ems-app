@@ -14,4 +14,7 @@ public interface BreakService {
     void deleteBreak(Long id);
 
     List<BreakResponseDTO> getBreaksBySession(Long sessionId);
+    
+    BreakResponseDTO getActiveBreak(Long sessionId); // ✅ Add this method
+
 }

@@ -10,7 +10,7 @@ import java.time.Duration;
 public class BreakResponseDTO {
 
     private Long id;
-    private LocalDateTime breakStart;
-    private LocalDateTime breakEnd;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private Duration breakDuration;
 }

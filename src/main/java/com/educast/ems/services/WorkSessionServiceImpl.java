@@ -1,5 +1,6 @@
 package com.educast.ems.services;
 
+import com.educast.ems.dto.BreakResponseDTO;
 import com.educast.ems.dto.WorkSessionRequestDTO;
 import com.educast.ems.dto.WorkSessionResponseDTO;
 import com.educast.ems.models.WorkSession;
@@ -64,7 +65,9 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
         // Auto mark invalid if > 9 hrs
         if (worked.toHours() > 9) {
-            // You can set a flag like session.setInvalid(true) in WorkSession model
+            session.setStatus("Auto Clocked Out / Invalid");
+        } else {
+        	session.setStatus("Completed");
         }
 
         WorkSession saved = workSessionRepository.save(session);
@@ -107,11 +110,42 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         dto.setEmployeeName(session.getEmployee().getFullName());
         dto.setClockInTime(session.getClockIn());
         dto.setClockOutTime(session.getClockOut());
+        dto.setStatus(session.getStatus());
         dto.setTotalWorkingHours(session.getTotalHours() != null
                 ? Duration.ofMinutes((long)(session.getTotalHours() * 60))
                 : null);
-        dto.setIdleTime(null);
-        dto.setBreaks(List.of());
+
+        // Breaks: session.getBreaks() assume it returns List<Break>
+        if (session.getBreaks() != null && !session.getBreaks().isEmpty()) {
+            List<BreakResponseDTO> breakDTOs = session.getBreaks().stream()
+                    .map(brk -> {
+                        BreakResponseDTO b = new BreakResponseDTO();
+                        b.setId(brk.getId());
+                        b.setStartTime(brk.getStartTime());
+                        b.setEndTime(brk.getEndTime());
+                        if (brk.getStartTime() != null && brk.getEndTime() != null) {
+                            b.setBreakDuration(Duration.between(brk.getStartTime(), brk.getEndTime()));
+                        } else {
+                            b.setBreakDuration(null);
+                        }
+                        return b;
+                    }).toList();
+            dto.setBreaks(breakDTOs);
+
+            // Detect ongoing break
+            Optional<BreakResponseDTO> ongoingBreak = breakDTOs.stream()
+                    .filter(b -> b.getEndTime() == null)
+                    .findFirst();
+            dto.setOnBreak(ongoingBreak.isPresent());
+            ongoingBreak.ifPresent(b -> dto.setCurrentBreakId(b.getId()));
+        } else {
+            dto.setBreaks(List.of());
+            dto.setOnBreak(false);
+            dto.setCurrentBreakId(null);
+        }
+
+        dto.setIdleTime(null); // existing behavior
         return dto;
     }
+
 }
