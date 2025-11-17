@@ -2,6 +2,7 @@ package com.educast.ems.controllers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -73,6 +74,17 @@ public class WorkSessionController {
         return ResponseEntity.ok("Service not implemented yet"); // Temporary
     }
     
+    @GetMapping("/active")
+    public ResponseEntity<WorkSessionResponseDTO> getActiveSession(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long empId = userDetails.getEmployeeId();
+
+        Optional<WorkSessionResponseDTO> session = workSessionService.getActiveSession(empId);
+
+        return ResponseEntity.ok(session.orElse(null));
+    }
+
     
 
 }

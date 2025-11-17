@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface WorkSessionRepository extends JpaRepository<WorkSession, Long> {
 
     Optional<WorkSession> findFirstByEmployeeIdAndClockOutIsNullOrderByClockInDesc(Long employeeId);
+    Optional<WorkSession> findByEmployeeIdAndClockOutIsNull(Long employeeId);
 
     List<WorkSession> findByEmployeeIdOrderByClockInDesc(Long employeeId);
 }

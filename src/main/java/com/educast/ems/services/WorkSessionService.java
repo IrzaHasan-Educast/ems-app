@@ -4,6 +4,7 @@ import com.educast.ems.dto.WorkSessionRequestDTO;
 import com.educast.ems.dto.WorkSessionResponseDTO;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WorkSessionService {
 
@@ -14,6 +15,7 @@ public interface WorkSessionService {
     WorkSessionResponseDTO getSessionById(Long id);
 
     WorkSessionResponseDTO getOngoingSessionByEmployee(Long employeeId);
+    public Optional<WorkSessionResponseDTO> getActiveSession(Long empId) ;
 
     List<WorkSessionResponseDTO> getSessionsByEmployee(Long employeeId);
 }

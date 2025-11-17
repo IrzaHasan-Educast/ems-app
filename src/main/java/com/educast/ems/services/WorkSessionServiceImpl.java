@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,6 +71,13 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         return mapToDTO(saved);
     }
 
+    public Optional<WorkSessionResponseDTO> getActiveSession(Long empId) {
+        Optional<WorkSession> session = workSessionRepository.findByEmployeeIdAndClockOutIsNull(empId);
+
+        return session.map(this::mapToDTO);
+    }
+
+    
     @Override
     public WorkSessionResponseDTO getSessionById(Long id) {
         WorkSession session = workSessionRepository.findById(id)
