@@ -67,7 +67,7 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         session.setTotalHours(worked.toHours() + worked.toMinutesPart() +worked.toSecondsPart() / 60.0);
 
         // Auto mark invalid if > 9 hrs
-        session.setStatus(worked.toHours() > 9 ? "Auto Clocked Out / Invalid" : "Completed");
+        session.setStatus(worked.toHours() > 9 ? "Invalid Clocked Out" : "Completed");
 
 
         WorkSession saved = workSessionRepository.save(session);

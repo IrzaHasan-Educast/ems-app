@@ -1,7 +1,9 @@
 package com.educast.ems.controllers;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,6 @@ import com.educast.ems.dto.WorkSessionResponseDTO;
 import com.educast.ems.security.CustomUserDetails;
 import com.educast.ems.services.WorkSessionService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WorkSessionController {
 
-     private final WorkSessionService workSessionService; // ✅ Commented for now
+     private final WorkSessionService workSessionService; 
 
      @PostMapping("/clock-in")
      public ResponseEntity<WorkSessionResponseDTO> clockIn(
@@ -60,18 +61,21 @@ public class WorkSessionController {
          return ResponseEntity.ok(session);
      }
 
-    @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<?> getByEmployee(@PathVariable Long employeeId) {
-        // List<WorkSessionResponseDTO> sessions = workSessionService.getSessionsByEmployee(employeeId);
-        // return ResponseEntity.ok(sessions);
-        return ResponseEntity.ok("Service not implemented yet"); // Temporary
-    }
+     @GetMapping("/employee/{employeeId}")
+     public ResponseEntity<List<WorkSessionResponseDTO>> getByEmployee(@PathVariable Long employeeId) {
+         List<WorkSessionResponseDTO> sessions = workSessionService.getSessionsByEmployee(employeeId);
+         if (sessions.isEmpty()) {
+             return ResponseEntity.noContent().build();
+         }
+         return ResponseEntity.ok(sessions);
+     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
-        // WorkSessionResponseDTO responseDTO = workSessionService.getSessionById(id);
-        // return ResponseEntity.ok(responseDTO);
-        return ResponseEntity.ok("Service not implemented yet"); // Temporary
+         WorkSessionResponseDTO responseDTO = workSessionService.getSessionById(id);
+         return ResponseEntity.ok(responseDTO);
+//        return ResponseEntity.ok("Service not implemented yet"); // Temporary
     }
     
     @GetMapping("/active")
@@ -85,6 +89,13 @@ public class WorkSessionController {
         return ResponseEntity.ok(session.orElse(null));
     }
 
-    
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("employeeId", userDetails.getEmployeeId());
+        resp.put("fullName", userDetails.getFullName());
+        return ResponseEntity.ok(resp);
+    }
+
 
 }
