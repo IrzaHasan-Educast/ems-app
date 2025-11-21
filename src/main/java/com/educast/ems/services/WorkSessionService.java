@@ -16,6 +16,6 @@ public interface WorkSessionService {
 
     WorkSessionResponseDTO getOngoingSessionByEmployee(Long employeeId);
     public Optional<WorkSessionResponseDTO> getActiveSession(Long empId) ;
-
+    public List<WorkSessionResponseDTO> getAllSessions();
     List<WorkSessionResponseDTO> getSessionsByEmployee(Long employeeId);
 }

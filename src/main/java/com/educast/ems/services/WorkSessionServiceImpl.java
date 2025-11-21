@@ -22,6 +22,15 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
     private final WorkSessionRepository workSessionRepository;
     private final EmployeeRepository employeeRepository;
+    
+    public List<WorkSessionResponseDTO> getAllSessions() {
+    	return workSessionRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+        
+    }
+
 
     @Override
     public WorkSessionResponseDTO clockIn(WorkSessionRequestDTO requestDTO) {

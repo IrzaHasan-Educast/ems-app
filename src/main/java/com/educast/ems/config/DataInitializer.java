@@ -24,7 +24,7 @@
 //        return args -> {
 //            // Create Employees
 //            Employee adminEmp = new Employee(null, "Admin User", "admin@educast.com", null, "Male", null, null, LocalDate.now(), true);
-//            Employee hrEmp = new Employee(null, "HR User", "hr@educast.com", null, "Female", null, null, LocalDate.now(), true);
+//            //Employee hrEmp = new Employee(null, "HR User", "hr@educast.com", null, "Female", null, null, LocalDate.now(), true);
 //            Employee employeeEmp = new Employee(null, "Employee User", "employee@educast.com", null, "Male", null, null, LocalDate.now(), true);
 //
 //            employeeRepo.save(adminEmp);
@@ -33,7 +33,7 @@
 //
 //            // Create Users with bcrypt passwords
 //            User adminUser = new User(null, adminEmp, "admin", passwordEncoder.encode("admin123"), Role.ADMIN);
-//            User hrUser = new User(null, hrEmp, "hr", passwordEncoder.encode("hr123"), Role.HR);
+//            //User hrUser = new User(null, hrEmp, "hr", passwordEncoder.encode("hr123"), Role.HR);
 //            User employeeUser = new User(null, employeeEmp, "employee", passwordEncoder.encode("employee123"), Role.EMPLOYEE);
 //
 //            userRepo.save(adminUser);

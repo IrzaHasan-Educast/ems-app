@@ -1,0 +1,24 @@
+package com.educast.ems.controllers;
+
+import com.educast.ems.dto.WorkSessionResponseDTO;
+import com.educast.ems.services.WorkSessionService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/admin/work-sessions")
+@RequiredArgsConstructor
+public class AdminWorkSessionController {
+
+    private final WorkSessionService workSessionService;
+
+    // ✅ Only ADMIN can access this endpoint
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<WorkSessionResponseDTO> getAllWorkSessions() {
+        return workSessionService.getAllSessions();
+    }
+}
