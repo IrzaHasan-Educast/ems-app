@@ -5,6 +5,7 @@ import com.educast.ems.dto.WorkSessionRequestDTO;
 import com.educast.ems.dto.WorkSessionResponseDTO;
 import com.educast.ems.models.WorkSession;
 import com.educast.ems.models.Employee;
+import com.educast.ems.models.Break;
 import com.educast.ems.repositories.WorkSessionRepository;
 import com.educast.ems.repositories.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,18 +24,23 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
     private final WorkSessionRepository workSessionRepository;
     private final EmployeeRepository employeeRepository;
-    
+
+    /**
+     * Return all sessions sorted by clockIn desc (latest first).
+     */
+    @Override
     public List<WorkSessionResponseDTO> getAllSessions() {
-    	return workSessionRepository.findAll()
+        return workSessionRepository.findAll()
                 .stream()
+                .sorted(Comparator.comparing(WorkSession::getClockIn, Comparator.nullsLast(Comparator.reverseOrder())))
                 .map(this::mapToDTO)
-                .collect(Collectors.toList()); 
+                .collect(Collectors.toList());
     }
 
     @Override
     public WorkSessionResponseDTO clockIn(WorkSessionRequestDTO requestDTO) {
 
-        // Check if ongoing session exists
+        // Check if ongoing session exists (employee already clocked in)
         WorkSession ongoing = workSessionRepository
                 .findFirstByEmployeeIdAndClockOutIsNullOrderByClockInDesc(requestDTO.getEmployeeId())
                 .orElse(null);
@@ -48,6 +55,7 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         WorkSession session = new WorkSession();
         session.setEmployee(emp);
         session.setClockIn(LocalDateTime.now());
+        session.setStatus("Working");
 
         WorkSession saved = workSessionRepository.save(session);
 
@@ -56,38 +64,63 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
     @Override
     public WorkSessionResponseDTO clockOut(Long id) {
-    	
+
         WorkSession session = workSessionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
-        
+
         if (session.getClockOut() != null) {
             throw new RuntimeException("Already clocked out");
         }
 
         LocalDateTime now = LocalDateTime.now();
-        endOngoingBreaks(session,now);
+
+        // End any ongoing breaks for this session (set endTime + duration)
+        endOngoingBreaks(session, now);
 
         session.setClockOut(now);
 
-        // Calculate total hours
-        Duration worked = Duration.between(session.getClockIn(), now);
-        session.setTotalHours(worked.toHours() + worked.toMinutesPart() +worked.toSecondsPart() / 60.0);
+        // Calculate raw worked duration (clockOut - clockIn) in seconds
+        Duration rawWorked = Duration.between(session.getClockIn(), now);
+        long rawSeconds = rawWorked.getSeconds();
 
-        // Auto mark invalid if > 9 hrs
-        session.setStatus(worked.toHours() > 9 ? "Invalid Clocked Out" : "Completed");
+        // Sum breaks seconds (if any)
+        long totalBreakSeconds = 0;
+        if (session.getBreaks() != null && !session.getBreaks().isEmpty()) {
+            totalBreakSeconds = session.getBreaks().stream()
+                    .mapToLong(br -> {
+                        if (br.getStartTime() != null) {
+                            LocalDateTime end = br.getEndTime() != null ? br.getEndTime() : now;
+                            return Duration.between(br.getStartTime(), end).getSeconds();
+                        } else {
+                            return 0L;
+                        }
+                    })
+                    .sum();
+        }
 
+        // Net working seconds = raw - breaks (floor at 0)
+        long netWorkingSeconds = Math.max(0L, rawSeconds - totalBreakSeconds);
+
+        // Store totalHours as fractional hours (seconds -> hours double)
+        double totalHours = netWorkingSeconds / 3600.0;
+        session.setTotalHours(totalHours);
+
+        // Optionally set idleHours (can be computed differently; here kept null)
+        session.setIdleHours(null);
+
+        // Determine status based on net working hours (after breaks)
+        session.setStatus(netWorkingSeconds / 3600.0 > 9.0 ? "Invalid Clocked Out" : "Completed");
 
         WorkSession saved = workSessionRepository.save(session);
         return mapToDTO(saved);
     }
 
+    @Override
     public Optional<WorkSessionResponseDTO> getActiveSession(Long empId) {
         Optional<WorkSession> session = workSessionRepository.findByEmployeeIdAndClockOutIsNull(empId);
-
         return session.map(this::mapToDTO);
     }
 
-    
     @Override
     public WorkSessionResponseDTO getSessionById(Long id) {
         WorkSession session = workSessionRepository.findById(id)
@@ -110,6 +143,10 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         return sessions.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
+    /**
+     * Map WorkSession entity -> WorkSessionResponseDTO
+     * Ensures Duration fields are created from net seconds (totalHours double).
+     */
     private WorkSessionResponseDTO mapToDTO(WorkSession session) {
         WorkSessionResponseDTO dto = new WorkSessionResponseDTO();
         dto.setId(session.getId());
@@ -118,11 +155,16 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         dto.setClockInTime(session.getClockIn());
         dto.setClockOutTime(session.getClockOut());
         dto.setStatus(session.getStatus());
-        dto.setTotalWorkingHours(session.getTotalHours() != null
-                ? Duration.ofMinutes((long)(session.getTotalHours() * 60))
-                : null);
 
-        // Breaks: session.getBreaks() assume it returns List<Break>
+        // Convert stored totalHours (double hours) -> Duration (preserve fractional)
+        if (session.getTotalHours() != null) {
+            long seconds = (long) Math.round(session.getTotalHours() * 3600.0);
+            dto.setTotalWorkingHours(Duration.ofSeconds(seconds));
+        } else {
+            dto.setTotalWorkingHours(null);
+        }
+
+        // Breaks -> BreakResponseDTO
         if (session.getBreaks() != null && !session.getBreaks().isEmpty()) {
             List<BreakResponseDTO> breakDTOs = session.getBreaks().stream()
                     .map(brk -> {
@@ -136,10 +178,9 @@ public class WorkSessionServiceImpl implements WorkSessionService {
                             b.setBreakDuration(null);
                         }
                         return b;
-                    }).toList();
+                    }).collect(Collectors.toList());
             dto.setBreaks(breakDTOs);
 
-            // Detect ongoing break
             Optional<BreakResponseDTO> ongoingBreak = breakDTOs.stream()
                     .filter(b -> b.getEndTime() == null)
                     .findFirst();
@@ -151,20 +192,25 @@ public class WorkSessionServiceImpl implements WorkSessionService {
             dto.setCurrentBreakId(null);
         }
 
-        dto.setIdleTime(null); // existing behavior
+        dto.setIdleTime(null); // optional: compute if you track idle separately
         return dto;
     }
 
+    /**
+     * End any ongoing breaks by setting endTime and durationHours.
+     * Because WorkSession has cascade = ALL on breaks, saving the session later will persist those changes.
+     */
     private void endOngoingBreaks(WorkSession session, LocalDateTime endTime) {
         if (session.getBreaks() != null) {
-            session.getBreaks().stream()
-                .filter(b -> b.getEndTime() == null)
-                .forEach(b -> {
+            for (Break b : session.getBreaks()) {
+                if (b.getEndTime() == null) {
                     b.setEndTime(endTime);
-                    Duration duration = Duration.between(b.getStartTime(), endTime);
-                    b.setDurationHours(duration.toMinutes() / 60.0);
-                });
+                    // compute duration in hours as double
+                    long seconds = Duration.between(b.getStartTime(), endTime).getSeconds();
+                    double hours = seconds / 3600.0;
+                    b.setDurationHours(hours);
+                }
+            }
         }
     }
-
 }
