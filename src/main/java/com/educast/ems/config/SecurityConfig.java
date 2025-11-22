@@ -34,6 +34,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/employees/**").hasAnyRole("ADMIN", "HR")
                 .requestMatchers("/api/v1/work-sessions/**").hasRole("EMPLOYEE")
                 .requestMatchers("/api/v1/admin/work-sessions/**").hasRole("ADMIN")
+                // Attendance
+                .requestMatchers("/api/v1/attendance/my/**").hasRole("EMPLOYEE") // only employee
+                .requestMatchers("/api/v1/attendance/all/**").hasRole("ADMIN")   // only admin
+                .requestMatchers("/api/v1/attendance/mark/**").hasRole("EMPLOYEE") // employee marking
                 .anyRequest().authenticated()
                 
             )

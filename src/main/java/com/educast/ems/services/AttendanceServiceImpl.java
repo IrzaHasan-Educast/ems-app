@@ -1,0 +1,92 @@
+package com.educast.ems.services;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.educast.ems.dto.AttendanceResponseDTO;
+import com.educast.ems.models.Attendance;
+import com.educast.ems.models.Employee;
+import com.educast.ems.models.Shift;
+import com.educast.ems.repositories.AttendanceRepository;
+import com.educast.ems.repositories.EmployeeRepository;
+
+@Service
+public class AttendanceServiceImpl implements AttendanceService {
+
+    @Autowired
+    private AttendanceRepository attendanceRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Override
+    public void createAttendance(Long id) {
+        Employee emp = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        LocalDate today = LocalDate.now();
+
+        // Prevent duplicate attendance for today
+        boolean alreadyMarked = attendanceRepository.existsByEmployeeIdAndAttendanceDate(id, today);
+        if (alreadyMarked) {
+            throw new RuntimeException("Attendance already marked for today");
+        }
+
+        Attendance attendance = new Attendance();
+        attendance.setEmployee(emp);
+        attendance.setAttendanceDate(today);
+        LocalTime time = LocalTime.now();
+        attendance.setAttendanceTime(time);
+        attendance.setShift(getShift(time));
+        attendance.setPresent(true);
+
+        attendanceRepository.save(attendance);
+    }
+
+    private Shift getShift(LocalTime time) {
+        // Morning: 08:00 - 16:59
+    	if(!time.isBefore(LocalTime.of(8,0)) && time.isBefore(LocalTime.of(17,0))) {
+    	    return Shift.MORNING;
+    	} 
+        // Night: 20:00 - 03:59
+    	else if(!time.isBefore(LocalTime.of(20,0)) || time.isBefore(LocalTime.of(4,0))) {
+    	    return Shift.NIGHT;
+    	}
+    	//Other than these shifts
+    	else {
+    	    return Shift.CUSTOM;
+    	}
+
+    }
+
+    @Override
+    public List<AttendanceResponseDTO> getAllAttendance() {
+        List<Attendance> attendances = attendanceRepository.findAll();
+        return attendances.stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AttendanceResponseDTO> getAttendanceByEmpId(Long employeeId) {
+        List<Attendance> empAttendances = attendanceRepository.findByEmployeeId(employeeId);
+
+        // Return empty list if no attendance found
+        return empAttendances.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    private AttendanceResponseDTO mapToDto(Attendance attendance) {
+        AttendanceResponseDTO dto = new AttendanceResponseDTO();
+        dto.setEmployeeId(attendance.getEmployee().getId());
+        dto.setAttendanceDate(attendance.getAttendanceDate());
+        dto.setAttendanceTime(attendance.getAttendanceTime());
+        dto.setPresent(attendance.isPresent());
+        dto.setShift(attendance.getShift());
+        return dto;
+    }
+}
