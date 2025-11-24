@@ -11,6 +11,7 @@ import lombok.Data;
 public class AttendanceResponseDTO {
 	
 	private Long employeeId;
+	private String employeeName;
 	private boolean present;
 	private LocalTime attendanceTime;
 	private LocalDate attendanceDate;

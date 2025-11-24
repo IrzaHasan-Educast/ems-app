@@ -83,6 +83,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     private AttendanceResponseDTO mapToDto(Attendance attendance) {
         AttendanceResponseDTO dto = new AttendanceResponseDTO();
         dto.setEmployeeId(attendance.getEmployee().getId());
+        dto.setEmployeeName(attendance.getEmployee().getFullName()); 
         dto.setAttendanceDate(attendance.getAttendanceDate());
         dto.setAttendanceTime(attendance.getAttendanceTime());
         dto.setPresent(attendance.isPresent());
