@@ -48,7 +48,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         user.setPasswordHash(passwordEncoder.encode(password));
 
         if ("ADMIN".equalsIgnoreCase(employee.getRole())) user.setRole(Role.ADMIN);
-        else if ("HR".equalsIgnoreCase(employee.getRole())) user.setRole(Role.HR);
+//        else if ("HR".equalsIgnoreCase(employee.getRole())) user.setRole(Role.HR);
         else user.setRole(Role.EMPLOYEE);
 
         userRepository.save(user);
