@@ -80,6 +80,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.deleteById(id);
     }
 
-    
+    @Override
+    public Employee toggleActive(Long id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employee.setActive(!employee.isActive());
+        return employeeRepository.save(employee);
+    }
     
 }

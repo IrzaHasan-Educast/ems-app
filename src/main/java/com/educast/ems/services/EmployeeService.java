@@ -12,4 +12,6 @@ public interface EmployeeService {
     Employee createEmployee(Employee employee, String username, String password);
     Employee updateEmployee(Long id, EmployeeRequest request);
     void deleteEmployee(Long id);
+    Employee toggleActive(Long id);
+
 }

@@ -2,6 +2,9 @@ package com.educast.ems.controllers;
 
 import com.educast.ems.dto.AuthRequest;
 import com.educast.ems.dto.AuthResponse;
+import com.educast.ems.exception.InactiveAccountException;
+import com.educast.ems.exception.InvalidPasswordException;
+import com.educast.ems.exception.UserNotFoundException;
 import com.educast.ems.models.User;
 import com.educast.ems.repositories.UserRepository;
 import com.educast.ems.security.JwtUtil;
@@ -21,13 +24,18 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidPasswordException("Invalid password");
+        }
+
+        if (!user.getEmployee().isActive()) {
+            throw new InactiveAccountException("Account is inactive. Contact admin.");
         }
 
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
         return new AuthResponse(token, user.getRole().name());
     }
+
 }

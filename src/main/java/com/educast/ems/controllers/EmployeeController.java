@@ -8,6 +8,8 @@ import com.educast.ems.services.EmployeeService;
 import com.educast.ems.services.UserService;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,6 +66,14 @@ public class EmployeeController {
     @PreAuthorize("hasRole('ADMIN')") // only admin can delete
     public void deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
+    }
+    
+ // ✅ Toggle active/inactive
+    @PutMapping("/toggle-active/{id}")
+    public ResponseEntity<String> toggleActive(@PathVariable Long id) {
+        Employee employee = employeeService.toggleActive(id);
+        String status = employee.isActive() ? "activated" : "deactivated";
+        return ResponseEntity.ok("Employee " + status + " successfully");
     }
 
     private EmployeeResponse mapToResponse(Employee employee) {
