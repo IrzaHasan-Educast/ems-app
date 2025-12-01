@@ -51,20 +51,28 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     private Shift getShift(LocalTime time) {
-        // Morning: 08:00 - 16:59
-    	if(!time.isBefore(LocalTime.of(8,0)) && time.isBefore(LocalTime.of(17,0))) {
-    	    return Shift.MORNING;
-    	} 
-        // Night: 20:00 - 03:59
-    	else if(!time.isBefore(LocalTime.of(20,0)) || time.isBefore(LocalTime.of(4,0))) {
-    	    return Shift.NIGHT;
-    	}
-    	//Other than these shifts
-    	else {
-    	    return Shift.CUSTOM;
-    	}
-
+        // Morning first half: 08:00 - 12:59
+        if (!time.isBefore(LocalTime.of(8, 0)) && time.isBefore(LocalTime.of(13, 0))) {
+            return Shift.MORNING_FIRST_HALF;
+        } 
+        // Morning second half: 13:00 - 16:59
+        else if (!time.isBefore(LocalTime.of(13, 0)) && time.isBefore(LocalTime.of(17, 0))) {
+            return Shift.MORNING_SECOND_HALF;
+        } 
+        // Night first half: 20:00 - 23:59
+        else if (!time.isBefore(LocalTime.of(20, 0))) {
+            return Shift.NIGHT_FIRST_HALF;
+        } 
+        // Night second half: 00:00 - 04:59
+        else if (time.isBefore(LocalTime.of(5, 0))) {
+            return Shift.NIGHT_SECOND_HALF;
+        } 
+        // Other random times
+        else {
+            return Shift.CUSTOM;
+        }
     }
+
 
     @Override
     public List<AttendanceResponseDTO> getAllAttendance() {
