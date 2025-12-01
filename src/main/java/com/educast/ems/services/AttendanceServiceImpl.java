@@ -2,6 +2,8 @@ package com.educast.ems.services;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         Employee emp = employeeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Karachi"));
 
         // Prevent duplicate attendance for today
         boolean alreadyMarked = attendanceRepository.existsByEmployeeIdAndAttendanceDate(id, today);
@@ -40,7 +42,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         Attendance attendance = new Attendance();
         attendance.setEmployee(emp);
         attendance.setAttendanceDate(today);
-        LocalTime time = LocalTime.now();
+        LocalTime time = LocalTime.now(ZoneId.of("Asia/Karachi"));
         attendance.setAttendanceTime(time);
         attendance.setShift(getShift(time));
         attendance.setPresent(true);

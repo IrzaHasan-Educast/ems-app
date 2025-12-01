@@ -36,7 +36,7 @@ public class WorkSessionController {
          Long employeeId = userDetails.getEmployeeId();
 
          WorkSessionResponseDTO session = workSessionService.clockIn(new WorkSessionRequestDTO(
-                 employeeId, LocalDateTime.now(), null
+                 employeeId,null, null
          ));
 
          return ResponseEntity.ok(session);

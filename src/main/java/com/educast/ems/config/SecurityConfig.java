@@ -2,6 +2,7 @@ package com.educast.ems.config;
 
 import com.educast.ems.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -13,6 +14,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -20,6 +22,9 @@ import java.util.List;
 @EnableMethodSecurity(prePostEnabled = true) // ensures @PreAuthorize works
 public class SecurityConfig {
 
+	// ✅ frontend URLs from application.properties (comma-separated)
+    @Value("${frontend.url}")
+    private String frontendUrl;
     private final JwtAuthenticationFilter jwtFilter;
 
     @Bean
@@ -51,7 +56,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://edcast-crm.netlify.app"));
+     // ✅ convert comma-separated frontend URLs into list
+        List<String> allowedOrigins = Arrays.asList(frontendUrl.split(","));
+        configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

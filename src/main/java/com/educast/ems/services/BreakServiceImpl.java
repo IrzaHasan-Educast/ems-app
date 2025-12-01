@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +30,7 @@ public class BreakServiceImpl implements BreakService {
 
         Break brk = new Break();
         brk.setWorkSession(session);
-        brk.setStartTime(LocalDateTime.now()); // ✅ Break start is now
+        brk.setStartTime(LocalDateTime.now(ZoneId.of("Asia/Karachi")));
         brk.setEndTime(null); // Not ended yet
         brk.setDurationHours(null); // Will be calculated on end
 
@@ -51,7 +53,7 @@ public class BreakServiceImpl implements BreakService {
                 .orElseThrow(() -> new RuntimeException("Break not found"));
 
         // End the break
-        brk.setEndTime(LocalDateTime.now());
+        brk.setEndTime(LocalDateTime.now(ZoneId.of("Asia/Karachi")));
         if (brk.getStartTime() == null) {
             throw new RuntimeException("Break start time missing");
         }

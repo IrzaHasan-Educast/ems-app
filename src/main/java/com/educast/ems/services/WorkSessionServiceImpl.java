@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +56,8 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
         WorkSession session = new WorkSession();
         session.setEmployee(emp);
-        session.setClockIn(LocalDateTime.now());
+        session.setClockIn(LocalDateTime.now(ZoneId.of("Asia/Karachi")));
+//        System.out.println(LocalDateTime.now(ZoneOffset.UTC));
         session.setStatus("Working");
 
         WorkSession saved = workSessionRepository.save(session);
@@ -72,7 +75,7 @@ public class WorkSessionServiceImpl implements WorkSessionService {
             throw new RuntimeException("Already clocked out");
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Karachi"));
 
         // End any ongoing breaks for this session (set endTime + duration)
         endOngoingBreaks(session, now);

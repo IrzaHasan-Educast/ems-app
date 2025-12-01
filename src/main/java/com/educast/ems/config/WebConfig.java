@@ -10,9 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig {
 
-	@Value("${frontend.url:https://edcast-crm.netlify.app}")
-	private String frontendUrl;
-	
+//	@Value("${frontend.url:https://edcast-crm.netlify.app}")
+//	private String frontendUrl;
+//	
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
