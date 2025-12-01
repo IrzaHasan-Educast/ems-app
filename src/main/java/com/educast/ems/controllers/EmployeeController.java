@@ -26,21 +26,21 @@ public class EmployeeController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','HR')")
-    public List<Employee> getAllEmployees() {
+    public List<EmployeeResponse> getAllEmployees() {
         return employeeService.getAllEmployees();
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','HR') or principal == #id")
     public EmployeeResponse getEmployee(@PathVariable Long id) {
-        Employee emp = employeeService.getEmployeeById(id)
+        EmployeeResponse emp = employeeService.getEmployeeById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
-        return mapToResponse(emp);
+        return emp;
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','HR')")
-    public Employee createEmployee(@RequestBody EmployeeRequest dto) {
+    public EmployeeResponse createEmployee(@RequestBody EmployeeRequest dto) {
         Employee employee = new Employee();
         employee.setFullName(dto.getFullName());
         employee.setEmail(dto.getEmail());
@@ -58,8 +58,8 @@ public class EmployeeController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','HR')")
     public EmployeeResponse updateEmployee(@PathVariable Long id, @RequestBody EmployeeRequest dto) {
-        Employee updated = employeeService.updateEmployee(id, dto);
-        return mapToResponse(updated);
+        EmployeeResponse updated = employeeService.updateEmployee(id, dto);
+        return updated;
     }
 
     @DeleteMapping("/{id}")
@@ -71,7 +71,7 @@ public class EmployeeController {
  // ✅ Toggle active/inactive
     @PutMapping("/toggle-active/{id}")
     public ResponseEntity<String> toggleActive(@PathVariable Long id) {
-        Employee employee = employeeService.toggleActive(id);
+        EmployeeResponse employee = employeeService.toggleActive(id);
         String status = employee.isActive() ? "activated" : "deactivated";
         return ResponseEntity.ok("Employee " + status + " successfully");
     }

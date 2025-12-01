@@ -6,12 +6,15 @@ import com.educast.ems.models.User;
 import com.educast.ems.repositories.EmployeeRepository;
 import com.educast.ems.repositories.UserRepository;
 import com.educast.ems.dto.EmployeeRequest;
+import com.educast.ems.dto.EmployeeResponse;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,17 +25,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    public List<EmployeeResponse> getAllEmployees() {
+    	List<Employee> empList = employeeRepository.findAll();
+    	return empList.stream()
+        .map(this::mapToDto)   // use the private method
+        .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Employee> getEmployeeById(Long id) {
-        return employeeRepository.findById(id);
+    public Optional<EmployeeResponse> getEmployeeById(Long id) {
+    	return employeeRepository.findById(id)
+                .map(this::mapToDto);
     }
 
     @Override
-    public Employee createEmployee(Employee employee, String username, String password) {
+    public EmployeeResponse createEmployee(Employee employee, String username, String password) {
         if (password == null || password.length() < 6) {
             throw new IllegalArgumentException("Password must be at least 6 characters");
         }
@@ -52,12 +59,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         else user.setRole(Role.EMPLOYEE);
 
         userRepository.save(user);
-        return savedEmployee;
+        EmployeeResponse savedEmpResponse = mapToDto(savedEmployee);
+        return savedEmpResponse;
     }
 
     @Override
-    public Employee updateEmployee(Long id, EmployeeRequest request) {
-        return employeeRepository.findById(id).map(existing -> {
+    public EmployeeResponse updateEmployee(Long id, EmployeeRequest request) {
+        Employee emp =  employeeRepository.findById(id).map(existing -> {
             existing.setFullName(request.getFullName());
             existing.setEmail(request.getEmail());
             existing.setPhone(request.getPhone());
@@ -69,6 +77,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             existing.setActive(request.isActive());
             return employeeRepository.save(existing);
         }).orElseThrow(() -> new RuntimeException("Employee not found with id " + id));
+        
+        return mapToDto(emp);
     }
 
     @Override
@@ -81,11 +91,33 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee toggleActive(Long id) {
+    public EmployeeResponse toggleActive(Long id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         employee.setActive(!employee.isActive());
-        return employeeRepository.save(employee);
+        Employee emp = employeeRepository.save(employee);
+        return mapToDto(emp);
     }
     
+    
+    private EmployeeResponse mapToDto(Employee emp) {
+        if (emp == null) return null;
+
+        EmployeeResponse dto = new EmployeeResponse();
+        dto.setId(emp.getId());
+        dto.setFullName(emp.getFullName());
+        dto.setEmail(emp.getEmail());
+        dto.setPhone(emp.getPhone());
+        dto.setGender(emp.getGender());
+        dto.setDepartment(emp.getDepartment());
+        dto.setDesignation(emp.getDesignation());
+        dto.setRole(emp.getRole());
+        dto.setJoiningDate(emp.getJoiningDate());
+        dto.setActive(emp.isActive());
+
+        // If you have a linked user, you can set username here
+        // dto.setUsername(emp.getUser() != null ? emp.getUser().getUsername() : null);
+
+        return dto;
+    }
 }
