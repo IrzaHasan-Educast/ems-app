@@ -35,14 +35,14 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+//                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/v1/users/me").hasAnyRole("ADMIN", "HR") // <-- add this line
                 .requestMatchers("/api/v1/employees/**").hasAnyRole("ADMIN", "HR")
                 .requestMatchers("/api/v1/work-sessions/**").hasRole("EMPLOYEE")
                 .requestMatchers("/api/v1/admin/work-sessions/**").hasAnyRole("ADMIN", "HR")
                 // Attendance
                 .requestMatchers("/api/v1/attendance/my/**").hasRole("EMPLOYEE") // only employee
-                .requestMatchers("/api/v1/attendance/all/**").hasAnyRole("ADMIN", "HR")   // only admin
+                .requestMatchers("/api/v1/attendance/all/**").hasAnyRole("ADMIN", "HR")   
                 .requestMatchers("/api/v1/attendance/mark/**").hasRole("EMPLOYEE") // employee marking
                 .anyRequest().authenticated()
                 
