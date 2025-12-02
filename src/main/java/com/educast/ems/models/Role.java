@@ -2,6 +2,6 @@ package com.educast.ems.models;
 
 public enum Role {
     ADMIN,
-//    HR,
+    HR,
     EMPLOYEE
 }

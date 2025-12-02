@@ -54,4 +54,8 @@ public class CustomUserDetails implements UserDetails {
     public String getFullName() {
         return user.getEmployee().getFullName();
     }
+    
+    public String getRole() {
+    	return user.getEmployee().getRole();
+    }
 }

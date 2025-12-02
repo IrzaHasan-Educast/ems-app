@@ -17,7 +17,7 @@ public class AdminWorkSessionController {
 
     // ✅ Only ADMIN can access this endpoint
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public List<WorkSessionResponseDTO> getAllWorkSessions() {
         return workSessionService.getAllSessions();
     }

@@ -62,11 +62,11 @@ public class EmployeeController {
         return updated;
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // only admin can delete
-    public void deleteEmployee(@PathVariable Long id) {
-        employeeService.deleteEmployee(id);
-    }
+//    @DeleteMapping("/{id}")
+//    @PreAuthorize("hasRole('ADMIN')") // only admin can delete
+//    public void deleteEmployee(@PathVariable Long id) {
+//        employeeService.deleteEmployee(id);
+//    }
     
  // ✅ Toggle active/inactive
     @PutMapping("/toggle-active/{id}")
