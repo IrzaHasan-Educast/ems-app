@@ -53,7 +53,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     private Shift getShift(LocalTime time) {
         // Morning first half: 08:00 - 12:59
         if (!time.isBefore(LocalTime.of(8, 0)) && time.isBefore(LocalTime.of(13, 0))) {
-            return Shift.MORNING_FIRST_HALF;
+            return Shift.MORNING;
         } 
         // Morning second half: 13:00 - 16:59
         else if (!time.isBefore(LocalTime.of(13, 0)) && time.isBefore(LocalTime.of(17, 0))) {
@@ -61,7 +61,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         } 
         // Night first half: 20:00 - 23:59
         else if (!time.isBefore(LocalTime.of(20, 0))) {
-            return Shift.NIGHT_FIRST_HALF;
+            return Shift.NIGHT;
         } 
         // Night second half: 00:00 - 04:59
         else if (time.isBefore(LocalTime.of(5, 0))) {
