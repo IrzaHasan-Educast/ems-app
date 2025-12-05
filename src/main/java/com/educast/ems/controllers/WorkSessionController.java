@@ -94,6 +94,7 @@ public class WorkSessionController {
         Map<String, Object> resp = new HashMap<>();
         resp.put("employeeId", userDetails.getEmployeeId());
         resp.put("fullName", userDetails.getFullName());
+        resp.put("role", userDetails.getRole());
         return ResponseEntity.ok(resp);
     }
 

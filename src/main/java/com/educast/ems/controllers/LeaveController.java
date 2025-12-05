@@ -5,17 +5,22 @@ import org.springframework.web.bind.annotation.*;
 
 import com.educast.ems.dto.LeaveRequestDTO;
 import com.educast.ems.dto.LeaveResponseDTO;
+import com.educast.ems.models.LeaveType;
 import com.educast.ems.services.LeaveService;
+import com.educast.ems.services.LeaveTypeService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/leaves")
+@RequestMapping("/api/v1/leaves")
 @CrossOrigin
 public class LeaveController {
 
     @Autowired
     private LeaveService leaveService;
+    @Autowired
+    private LeaveTypeService leaveTypeService;
+
 
     @PostMapping
     public LeaveResponseDTO applyLeave(@RequestBody LeaveRequestDTO dto) {
@@ -50,5 +55,10 @@ public class LeaveController {
     @GetMapping("/status/{status}")
     public List<LeaveResponseDTO> getLeavesByStatus(@PathVariable String status) {
         return leaveService.getLeavesByStatus(status);
+    }
+    
+    @GetMapping("/types")
+    public LeaveType[] getLeaveTypes() {
+        return leaveTypeService.getAllLeaveTypes();
     }
 }

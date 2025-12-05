@@ -29,9 +29,8 @@ public class Leave {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "duration", nullable = false)
-    private LeaveDuration duration;
+    private int  duration;
 
     @Column(name = "description")
     private String description;

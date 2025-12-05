@@ -44,6 +44,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/attendance/my/**").hasRole("EMPLOYEE") // only employee
                 .requestMatchers("/api/v1/attendance/all/**").hasAnyRole("ADMIN", "HR")   
                 .requestMatchers("/api/v1/attendance/mark/**").hasRole("EMPLOYEE") // employee marking
+                // Leaves
+                .requestMatchers("/api/v1/leaves").hasRole("EMPLOYEE") // apply leave (POST)
+                .requestMatchers("/api/v1/leaves/employee/**").hasRole("EMPLOYEE") // get own leaves
+                .requestMatchers("/api/v1/leaves/types").hasAnyRole("EMPLOYEE", "ADMIN", "HR")
+                // Admin + HR
+                .requestMatchers("/api/v1/leaves/**").hasAnyRole("ADMIN", "HR")
                 .anyRequest().authenticated()
                 
             )
