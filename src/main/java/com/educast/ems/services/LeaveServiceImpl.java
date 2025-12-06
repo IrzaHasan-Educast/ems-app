@@ -33,6 +33,7 @@ public class LeaveServiceImpl implements LeaveService {
 
         Leave leave = new Leave();
         leave.setEmployee(emp);
+//        System.out.println(dto.getEndDate());
         leave.setStartDate(dto.getStartDate());
         leave.setEndDate(dto.getEndDate());
         leave.setDuration(dto.getDuration());
@@ -104,6 +105,8 @@ public class LeaveServiceImpl implements LeaveService {
         r.setId(leave.getId());
         r.setAppliedOn(leave.getAppliedOn());
         r.setUpdatedOn(leave.getUpdatedOn());
+        r.setStartDate(leave.getStartDate());
+        r.setEndDate(leave.getEndDate());
         r.setStatus(leave.getStatus());
         r.setLeaveType(leave.getLeaveType());
         r.setDuration(leave.getDuration());
