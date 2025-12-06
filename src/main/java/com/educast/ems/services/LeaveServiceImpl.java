@@ -103,6 +103,7 @@ public class LeaveServiceImpl implements LeaveService {
     private LeaveResponseDTO mapToResponse(Leave leave) {
         LeaveResponseDTO r = new LeaveResponseDTO();
         r.setId(leave.getId());
+        r.setEmployeeName(leave.getEmployee().getFullName());
         r.setAppliedOn(leave.getAppliedOn());
         r.setUpdatedOn(leave.getUpdatedOn());
         r.setStartDate(leave.getStartDate());

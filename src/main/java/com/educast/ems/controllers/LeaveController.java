@@ -42,7 +42,7 @@ public class LeaveController {
         return leaveService.rejectLeave(id);
     }
 
-    @GetMapping
+    @GetMapping("admin")
     public List<LeaveResponseDTO> getAllLeaves() {
         return leaveService.getAllLeaves();
     }

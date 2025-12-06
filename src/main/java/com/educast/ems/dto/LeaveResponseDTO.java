@@ -12,6 +12,7 @@ import lombok.Data;
 public class LeaveResponseDTO {
 
     private Long id;
+    private String employeeName;
     private LocalDateTime appliedOn;
     private LocalDateTime updatedOn;
     private LocalDate startDate;
