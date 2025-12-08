@@ -20,4 +20,6 @@ public interface LeaveService {
     List<LeaveResponseDTO> getLeavesByEmployee(Long employeeId);
 
     List<LeaveResponseDTO> getLeavesByStatus(String status);
+    public boolean deleteLeave(Long id);
+
 }

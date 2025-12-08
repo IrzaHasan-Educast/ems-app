@@ -1,6 +1,7 @@
 package com.educast.ems.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.educast.ems.dto.LeaveRequestDTO;
@@ -61,4 +62,15 @@ public class LeaveController {
     public LeaveType[] getLeaveTypes() {
         return leaveTypeService.getAllLeaveTypes();
     }
+    
+    @DeleteMapping("/employee/{leaveId}")
+    public ResponseEntity<?> deleteLeave(@PathVariable Long leaveId) {
+        try {
+            leaveService.deleteLeave(leaveId);
+            return ResponseEntity.ok().body("Leave deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

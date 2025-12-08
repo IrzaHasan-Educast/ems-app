@@ -99,6 +99,24 @@ public class LeaveServiceImpl implements LeaveService {
                 .stream().map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
+    
+    public boolean deleteLeave(Long leaveId) {
+    	Leave leave = leaveRepository.findById(leaveId)
+    			.orElseThrow(()-> new RuntimeException("Leave not found with id "+leaveId));
+    	if (leave == null) {
+    		return false;
+    	} else {
+    		LeaveStatus status = leave.getStatus();
+    		if (status == LeaveStatus.PENDING) {
+    			leaveRepository.delete(leave);
+            	return true;
+    		}
+    		else {
+    			return false;
+    		}
+    	}
+    }
+    
 
     private LeaveResponseDTO mapToResponse(Leave leave) {
         LeaveResponseDTO r = new LeaveResponseDTO();
