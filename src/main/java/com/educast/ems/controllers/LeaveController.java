@@ -42,6 +42,11 @@ public class LeaveController {
     public LeaveResponseDTO rejectLeave(@PathVariable Long id) {
         return leaveService.rejectLeave(id);
     }
+    
+    @PutMapping("/{id}/pending")
+    public LeaveResponseDTO pendingLeave(@PathVariable Long id) {
+        return leaveService.pendingLeave(id);
+    }
 
     @GetMapping("admin")
     public List<LeaveResponseDTO> getAllLeaves() {

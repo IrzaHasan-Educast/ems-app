@@ -80,6 +80,13 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
     @Override
+    public LeaveResponseDTO pendingLeave(Long id) {
+        Leave leave = leaveRepository.findById(id).orElseThrow();
+        leave.setStatus(LeaveStatus.PENDING);
+        leave.setUpdatedOn(LocalDateTime.now(ZoneId.of("Asia/Karachi")));
+        return mapToResponse(leaveRepository.save(leave));
+    }
+    @Override
     public List<LeaveResponseDTO> getAllLeaves() {
         return leaveRepository.findAll()
                 .stream().map(this::mapToResponse)
