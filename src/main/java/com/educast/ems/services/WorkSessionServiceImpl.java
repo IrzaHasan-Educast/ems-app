@@ -112,8 +112,13 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         session.setIdleHours(null);
 
         // Determine status based on net working hours (after breaks)
-        session.setStatus(netWorkingSeconds / 3600.0 > 9.0 ? "Invalid Clocked Out" : "Completed");
-
+        if(netWorkingSeconds/3600.0<3.0) {
+        	session.setStatus("Early Clocked Out");
+        } else if (netWorkingSeconds/3600.0 >9.0 ) {
+        	session.setStatus("Invalid Clocked Out");
+        }else {
+        	session.setStatus("Completed");
+        }
         WorkSession saved = workSessionRepository.save(session);
         return mapToDTO(saved);
     }
