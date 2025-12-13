@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,39 @@ public class AttendanceServiceImpl implements AttendanceService {
         return empAttendances.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
+    }
+    
+    // Get active employees absent today
+    @Override
+    public List<AttendanceResponseDTO> getAbsentToday() {
+        LocalDate today = LocalDate.now();
+        List<Employee> absentEmployees = attendanceRepository.findActiveEmployeesAbsentOn(today);
+        List<AttendanceResponseDTO> response = new ArrayList<>();
+        for (Employee e : absentEmployees) {
+            AttendanceResponseDTO dto = new AttendanceResponseDTO();
+            dto.setEmployeeId(e.getId());
+            dto.setEmployeeName(e.getFullName());
+            dto.setAttendanceDate(today);
+            dto.setPresent(false);
+            response.add(dto);
+        }
+        return response;
+    }
+
+    // Get absent employees for inactive ones up to leaving date
+    @Override
+    public List<AttendanceResponseDTO> getAbsentEmployeesHistory() {
+        LocalDate today = LocalDate.now();
+        List<Employee> absentEmployees = attendanceRepository.findEmployeesAbsentBetween(today);
+        List<AttendanceResponseDTO> response = new ArrayList<>();
+        for (Employee e : absentEmployees) {
+            AttendanceResponseDTO dto = new AttendanceResponseDTO();
+            dto.setEmployeeId(e.getId());
+            dto.setEmployeeName(e.getFullName());
+            dto.setPresent(false);
+            response.add(dto);
+        }
+        return response;
     }
 
     private AttendanceResponseDTO mapToDto(Attendance attendance) {

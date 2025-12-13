@@ -10,6 +10,6 @@ public interface AttendanceService {
 	
 	List<AttendanceResponseDTO> getAllAttendance();
 	List<AttendanceResponseDTO> getAttendanceByEmpId(Long employeeId);
-
-//	Shift getShift(LocalTime time);
+	List<AttendanceResponseDTO> getAbsentToday();
+	List<AttendanceResponseDTO> getAbsentEmployeesHistory();
 }
