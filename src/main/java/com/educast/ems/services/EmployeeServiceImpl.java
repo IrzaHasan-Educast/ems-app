@@ -9,6 +9,9 @@ import com.educast.ems.dto.EmployeeRequest;
 import com.educast.ems.dto.EmployeeResponse;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -64,22 +67,28 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeResponse updateEmployee(Long id, EmployeeRequest request) {
-        Employee emp =  employeeRepository.findById(id).map(existing -> {
-            existing.setFullName(request.getFullName());
-            existing.setEmail(request.getEmail());
-            existing.setPhone(request.getPhone());
-            existing.setGender(request.getGender());
-            existing.setDepartment(request.getDepartment());
-            existing.setRole(request.getRole());
-            existing.setDesignation(request.getDesignation());
-            existing.setJoiningDate(request.getJoiningDate());
-            existing.setActive(request.isActive());
-            return employeeRepository.save(existing);
-        }).orElseThrow(() -> new RuntimeException("Employee not found with id " + id));
-        
-        return mapToDto(emp);
-    }
+	public EmployeeResponse updateEmployee(Long id, EmployeeRequest request) {
+	    String currentUserRole = getCurrentUserRole(); // logged-in user role
+	
+	    if ("ADMIN".equalsIgnoreCase(request.getRole()) && "HR".equalsIgnoreCase(currentUserRole)) {
+	        throw new RuntimeException("HR cannot update Admin employee!");
+	    }
+	
+	    Employee emp = employeeRepository.findById(id).map(existing -> {
+	        existing.setFullName(request.getFullName());
+	        existing.setEmail(request.getEmail());
+	        existing.setPhone(request.getPhone());
+	        existing.setGender(request.getGender());
+	        existing.setDepartment(request.getDepartment());
+	        existing.setRole(request.getRole());
+	        existing.setDesignation(request.getDesignation());
+	        existing.setJoiningDate(request.getJoiningDate());
+	        existing.setActive(request.isActive());
+	        return employeeRepository.save(existing);
+	    }).orElseThrow(() -> new RuntimeException("Employee not found with id " + id));
+	
+	    return mapToDto(emp);
+	}
 
     @Override
     public void deleteEmployee(Long id) {
@@ -119,5 +128,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         // dto.setUsername(emp.getUser() != null ? emp.getUser().getUsername() : null);
 
         return dto;
+    }
+    
+    private String getCurrentUserRole() {
+        // If using Spring Security with JWT
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities() != null) {
+            return authentication.getAuthorities().stream()
+                    .findFirst()
+                    .map(grantedAuthority -> grantedAuthority.getAuthority())
+                    .orElse("");
+        }
+        return "";
     }
 }

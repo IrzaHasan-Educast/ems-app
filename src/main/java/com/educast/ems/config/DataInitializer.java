@@ -20,65 +20,85 @@
 //    private final PasswordEncoder passwordEncoder;
 //
 //    @Bean
-//CommandLineRunner initData(EmployeeRepository employeeRepo, UserRepository userRepo) {
-//    return args -> {
-//        // Create Employees
-////        Employee adminEmp = new Employee(
-////                null,
-////                "Admin User",
-////                "admin@educast.com",
-////                "03001234567",      // phone
-////                "Male",
-////                "Management",       // department
-////                "Administrator",    // designation
-////                "ADMIN",            // role
-////                LocalDate.now(),    // joiningDate
-////                true                // active
-////        );
+//    CommandLineRunner initData(EmployeeRepository employeeRepo, UserRepository userRepo) {
+//        return args -> {
 //
-//        Employee hrEmp = new Employee(
-//                null,
-//                "HR User",
-//                "hr@educast.com",
-//                "03007654321",      // phone
-//                "Female",
-//                "Human Resources",  // department
-//                "HR Manager",       // designation
-//                "HR",               // role
-//                LocalDate.now(),    // joiningDate
-//                true                // active
-//        );
+//            // ----- HR -----
+//            if (!userRepo.existsByUsername("hr")) {
 //
-////        Employee employeeEmp = new Employee(
-////                null,
-////                "Employee User",
-////                "employee@educast.com",
-////                "03009876543",      // phone
-////                "Male",
-////                "Engineering",      // department
-////                "Software Engineer",// designation
-////                "EMPLOYEE",         // role
-////                LocalDate.now(),    // joiningDate
-////                true                // active
-////        );
+//                Employee hrEmp = new Employee(
+//                        null,
+//                        "HR User",
+//                        "hr@educast.com",
+//                        "03007654321",
+//                        "Female",
+//                        "Human Resources",
+//                        "HR Manager",
+//                        "HR",
+//                        LocalDate.now(),
+//                        true
+//                );
+//                employeeRepo.save(hrEmp);
 //
-//        // Save employees
-////        employeeRepo.save(adminEmp);
-//        employeeRepo.save(hrEmp);
-////        employeeRepo.save(employeeEmp);
+//                User hrUser = new User(null, hrEmp, "hr", passwordEncoder.encode("hr123"), Role.HR);
+//                userRepo.save(hrUser);
 //
-//        // Create Users with bcrypt passwords
-////        User adminUser = new User(null, adminEmp, "admin", passwordEncoder.encode("admin123"), Role.ADMIN);
-//        User hrUser = new User(null, hrEmp, "hr", passwordEncoder.encode("hr123"), Role.HR);
-////        User employeeUser = new User(null, employeeEmp, "employee", passwordEncoder.encode("employee123"), Role.EMPLOYEE);
+//                System.out.println("HR user created successfully!");
+//            } else {
+//                System.out.println("HR user already exists.");
+//            }
 //
-//        // Save users
-////        userRepo.save(adminUser);
-//        userRepo.save(hrUser);
-////        userRepo.save(employeeUser);
+//            // ----- ADMIN -----
+//            if (!userRepo.existsByUsername("admin")) {
 //
-//        System.out.println("Sample users created successfully!");
-//    };
-//}
+//                Employee adminEmp = new Employee(
+//                        null,
+//                        "Admin User",
+//                        "admin@educast.com",
+//                        "03001234567",
+//                        "Male",
+//                        "Management",
+//                        "Administrator",
+//                        "ADMIN",
+//                        LocalDate.now(),
+//                        true
+//                );
+//                employeeRepo.save(adminEmp);
+//
+//                User adminUser = new User(null, adminEmp, "admin", passwordEncoder.encode("admin123"), Role.ADMIN);
+//                userRepo.save(adminUser);
+//
+//                System.out.println("Admin user created successfully!");
+//            } else {
+//                System.out.println("Admin user already exists.");
+//            }
+//
+//            // ----- EMPLOYEE -----
+//            if (!userRepo.existsByUsername("employee")) {
+//
+//                Employee employeeEmp = new Employee(
+//                        null,
+//                        "Employee User",
+//                        "employee@educast.com",
+//                        "03009876543",
+//                        "Male",
+//                        "Engineering",
+//                        "Software Engineer",
+//                        "EMPLOYEE",
+//                        LocalDate.now(),
+//                        true
+//                );
+//                employeeRepo.save(employeeEmp);
+//
+//                User employeeUser = new User(null, employeeEmp, "employee", passwordEncoder.encode("employee123"), Role.EMPLOYEE);
+//                userRepo.save(employeeUser);
+//
+//                System.out.println("Employee user created successfully!");
+//            } else {
+//                System.out.println("Employee user already exists.");
+//            }
+//
+//        };
+//    }
 //
 //}
