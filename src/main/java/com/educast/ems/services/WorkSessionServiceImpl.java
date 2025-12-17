@@ -65,63 +65,70 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         return mapToDTO(saved);
     }
 
-    @Override
-    public WorkSessionResponseDTO clockOut(Long id) {
+	@Override
+	public WorkSessionResponseDTO clockOut(Long id) {
+	
+	    WorkSession session = workSessionRepository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("Session not found"));
+	
+	    if (session.getClockOut() != null) {
+	        throw new RuntimeException("Already clocked out");
+	    }
+	
+	    LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Karachi"));
+	
+	    // End any ongoing breaks for this session (set endTime + duration)
+	    endOngoingBreaks(session, now);
+	
+	    session.setClockOut(now);
+	
+	    // Calculate raw worked duration (clockOut - clockIn) in seconds
+	    Duration rawWorked = Duration.between(session.getClockIn(), now);
+	    long rawSeconds = rawWorked.getSeconds();
+	
+	    // Sum breaks seconds (if any)
+	    long totalBreakSeconds = 0;
+	    if (session.getBreaks() != null && !session.getBreaks().isEmpty()) {
+	        totalBreakSeconds = session.getBreaks().stream()
+	                .mapToLong(br -> {
+	                    if (br.getStartTime() != null) {
+	                        LocalDateTime end = br.getEndTime() != null ? br.getEndTime() : now;
+	                        return Duration.between(br.getStartTime(), end).getSeconds();
+	                    } else {
+	                        return 0L;
+	                    }
+	                })
+	                .sum();
+	    }
+	
+	    // Net working seconds = raw - breaks (floor at 0)
+	    long netWorkingSeconds = Math.max(0L, rawSeconds - totalBreakSeconds);
+	
+	    // 1️⃣ Store totalHours as fractional hours (seconds -> hours double) (existing behavior)
+	    double totalHours = netWorkingSeconds / 3600.0;
+	    session.setTotalHours(totalHours);
+	
+	    // 2️⃣ Save total session hours (clockOut - clockIn, including breaks)
+	    double totalSessionHours = rawSeconds / 3600.0;
+	    session.setTotalSessionHours(totalSessionHours);
+	
+	    // 3️⃣ Save idle hours (breaks total)
+	    double idleHours = totalBreakSeconds / 3600.0;
+	    session.setIdleHours(idleHours);
+	
+	    // Determine status based on net working hours (after breaks)
+	    if (totalHours < 3.0) {
+	        session.setStatus("Early Clocked Out");
+	    } else if (totalHours > 9.0) {
+	        session.setStatus("Invalid Clocked Out");
+	    } else {
+	        session.setStatus("Completed");
+	    }
+	
+	    WorkSession saved = workSessionRepository.save(session);
+	    return mapToDTO(saved);
+	}
 
-        WorkSession session = workSessionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Session not found"));
-
-        if (session.getClockOut() != null) {
-            throw new RuntimeException("Already clocked out");
-        }
-
-        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Karachi"));
-
-        // End any ongoing breaks for this session (set endTime + duration)
-        endOngoingBreaks(session, now);
-
-        session.setClockOut(now);
-
-        // Calculate raw worked duration (clockOut - clockIn) in seconds
-        Duration rawWorked = Duration.between(session.getClockIn(), now);
-        long rawSeconds = rawWorked.getSeconds();
-
-        // Sum breaks seconds (if any)
-        long totalBreakSeconds = 0;
-        if (session.getBreaks() != null && !session.getBreaks().isEmpty()) {
-            totalBreakSeconds = session.getBreaks().stream()
-                    .mapToLong(br -> {
-                        if (br.getStartTime() != null) {
-                            LocalDateTime end = br.getEndTime() != null ? br.getEndTime() : now;
-                            return Duration.between(br.getStartTime(), end).getSeconds();
-                        } else {
-                            return 0L;
-                        }
-                    })
-                    .sum();
-        }
-
-        // Net working seconds = raw - breaks (floor at 0)
-        long netWorkingSeconds = Math.max(0L, rawSeconds - totalBreakSeconds);
-
-        // Store totalHours as fractional hours (seconds -> hours double)
-        double totalHours = netWorkingSeconds / 3600.0;
-        session.setTotalHours(totalHours);
-
-        // Optionally set idleHours (can be computed differently; here kept null)
-        session.setIdleHours(null);
-
-        // Determine status based on net working hours (after breaks)
-        if(netWorkingSeconds/3600.0<3.0) {
-        	session.setStatus("Early Clocked Out");
-        } else if (netWorkingSeconds/3600.0 >9.0 ) {
-        	session.setStatus("Invalid Clocked Out");
-        }else {
-        	session.setStatus("Completed");
-        }
-        WorkSession saved = workSessionRepository.save(session);
-        return mapToDTO(saved);
-    }
 
     @Override
     public Optional<WorkSessionResponseDTO> getActiveSession(Long empId) {
@@ -150,6 +157,50 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         List<WorkSession> sessions = workSessionRepository.findByEmployeeIdOrderByClockInDesc(employeeId);
         return sessions.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
+    
+    @Override
+    public List<WorkSessionResponseDTO> getAllSessionsFiltered(
+            Long employeeId, String status, Integer month, String searchTerm, int page, int size) {
+
+        List<WorkSession> sessions = workSessionRepository.findFiltered(employeeId, status, month);
+
+        // Optional search term filtering in memory (small overhead)
+        if (searchTerm != null && !searchTerm.isBlank()) {
+            String lower = searchTerm.toLowerCase();
+            sessions = sessions.stream()
+                    .filter(s -> s.getEmployee().getFullName().toLowerCase().contains(lower)
+                            || (s.getStatus() != null && s.getStatus().toLowerCase().contains(lower)))
+                    .toList();
+        }
+
+        // Pagination
+        int start = page * size;
+        int end = Math.min(start + size, sessions.size());
+        if (start > end) return List.of();
+
+        List<WorkSession> pageList = sessions.subList(start, end);
+
+        // Map to DTO, compute duration for ongoing Working sessions
+        return pageList.stream().map(ws -> {
+            WorkSessionResponseDTO dto = mapToDTO(ws);
+            if ("Working".equals(ws.getStatus())) {
+                LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Karachi"));
+                long totalMillis = Duration.between(ws.getClockIn(), now).toMillis();
+
+                long breakMillis = ws.getBreaks() != null ? ws.getBreaks().stream()
+                        .mapToLong(br -> {
+                            LocalDateTime breakEnd = br.getEndTime() != null ? br.getEndTime() : now;
+                            return Duration.between(br.getStartTime(), breakEnd).toMillis();
+                        }).sum() : 0;
+
+                long netMillis = Math.max(0, totalMillis - breakMillis);
+
+                dto.setTotalWorkingHours(Duration.ofMillis(netMillis));
+            }
+            return dto;
+        }).toList();
+    }
+
 
     /**
      * Map WorkSession entity -> WorkSessionResponseDTO
@@ -170,6 +221,22 @@ public class WorkSessionServiceImpl implements WorkSessionService {
             dto.setTotalWorkingHours(Duration.ofSeconds(seconds));
         } else {
             dto.setTotalWorkingHours(null);
+        }
+
+        // Total session hours (clockOut - clockIn, including breaks)
+        if (session.getTotalSessionHours() != null) {
+            long seconds = (long) Math.round(session.getTotalSessionHours() * 3600.0);
+            dto.setTotalSessionHours(Duration.ofSeconds(seconds));
+        } else {
+            dto.setTotalSessionHours(null);
+        }
+
+        // Idle time / total break duration
+        if (session.getIdleHours() != null) {
+            long seconds = (long) Math.round(session.getIdleHours() * 3600.0);
+            dto.setIdleTime(Duration.ofSeconds(seconds));
+        } else {
+            dto.setIdleTime(null);
         }
 
         // Breaks -> BreakResponseDTO

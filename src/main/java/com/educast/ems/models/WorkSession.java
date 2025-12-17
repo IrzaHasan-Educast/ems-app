@@ -26,11 +26,14 @@ public class WorkSession {
     private LocalDateTime clockOut;
 
     @Column(nullable = true)
-    private Double totalHours;  // Computed as clockOut - clockIn - breaks
+    private Double totalHours;  
 
     @Column(nullable = true)
-    private Double idleHours;   // Optional, time spent idle
+    private Double idleHours;   
 
+    @Column(nullable = true)
+    private Double totalSessionHours;
+    
     @OneToMany(mappedBy = "workSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Break> breaks;
 

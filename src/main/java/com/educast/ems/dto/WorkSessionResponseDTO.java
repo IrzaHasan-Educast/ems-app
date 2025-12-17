@@ -17,6 +17,7 @@ public class WorkSessionResponseDTO {
     private LocalDateTime clockOutTime;
     private Duration totalWorkingHours;
     private Duration idleTime; // optional, calculate breaks
+    private Duration totalSessionHours; // clockOut - clockIn including breaks
     private List<BreakResponseDTO> breaks; // list of breaks in this session
     private String status;
     

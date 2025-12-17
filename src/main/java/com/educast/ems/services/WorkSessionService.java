@@ -18,4 +18,6 @@ public interface WorkSessionService {
     public Optional<WorkSessionResponseDTO> getActiveSession(Long empId) ;
     public List<WorkSessionResponseDTO> getAllSessions();
     List<WorkSessionResponseDTO> getSessionsByEmployee(Long employeeId);
+    public List<WorkSessionResponseDTO> getAllSessionsFiltered(
+    Long employeeId, String status, Integer month, String searchTerm, int page, int size);
 }

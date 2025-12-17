@@ -7,6 +7,7 @@ import com.educast.ems.repositories.EmployeeRepository;
 import com.educast.ems.repositories.UserRepository;
 import com.educast.ems.dto.EmployeeRequest;
 import com.educast.ems.dto.EmployeeResponse;
+import com.educast.ems.dto.WorkSessionResponseDTO;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final WorkSessionService workSession;
 
     @Override
     public List<EmployeeResponse> getAllEmployees() {
@@ -103,12 +105,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponse toggleActive(Long id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
+        boolean isSessionActive =checkOngoingActivities(id);
+        if(isSessionActive) {
+        	System.out.println("Session was active");
+        }else {
+        	System.out.println("Not Activi");
+        }
         employee.setActive(!employee.isActive());
         Employee emp = employeeRepository.save(employee);
         return mapToDto(emp);
     }
     
-    
+    private boolean checkOngoingActivities(Long empId) {
+    	WorkSessionResponseDTO wResponse = workSession.getOngoingSessionByEmployee(empId);
+    	if(wResponse != null) {
+    		workSession.clockOut(wResponse.getId());
+    		return true;
+    	}
+    	return false;
+    }
     private EmployeeResponse mapToDto(Employee emp) {
         if (emp == null) return null;
 
