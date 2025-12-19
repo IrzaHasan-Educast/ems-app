@@ -25,5 +25,5 @@ public interface WorkSessionService {
             Long sessionId,
             WorkSessionHoursSyncDTO dto
     );
-
+    public List<WorkSessionResponseDTO> getLatest3SessionsByEmployee(Long employeeId);
 }

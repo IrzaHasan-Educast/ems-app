@@ -11,6 +11,7 @@ import com.educast.ems.repositories.EmployeeRepository;
 import com.educast.ems.repositories.WorkSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -35,9 +36,9 @@ public class WorkSessionServiceImpl implements WorkSessionService {
     public WorkSessionResponseDTO clockIn(WorkSessionRequestDTO requestDTO) {
 
         if (workSessionRepository
-                .findFirstByEmployeeIdAndClockOutIsNullOrderByClockInDesc(
+                .findByEmployeeIdAndClockOutIsNull(
                         requestDTO.getEmployeeId())
-                .isPresent()) {
+                .size() >0) {
             throw new RuntimeException("Already clocked in");
         }
 
@@ -84,10 +85,15 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
     @Override
     public Optional<WorkSessionResponseDTO> getActiveSession(Long empId) {
-        return workSessionRepository
-                .findByEmployeeIdAndClockOutIsNull(empId)
-                .map(this::mapToDTO);
+        List<WorkSession> activeSessions = workSessionRepository.findByEmployeeIdAndClockOutIsNull(empId);
+        if (activeSessions.isEmpty()) {
+            return Optional.empty();
+        }
+        // Take the latest one (or first)
+        WorkSession latest = activeSessions.get(activeSessions.size() - 1); // or use .get(0) depending on order
+        return Optional.of(mapToDTO(latest));
     }
+
 
     @Override
     public WorkSessionResponseDTO getSessionById(Long id) {
@@ -126,6 +132,16 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
     /* ================= FILTERED ================= */
 
+    @Override
+    public List<WorkSessionResponseDTO> getLatest3SessionsByEmployee(Long employeeId) {
+        return workSessionRepository.findTop3ByEmployeeIdOrderByClockInDesc(employeeId)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
+
+    
     @Override
     public List<WorkSessionResponseDTO> getAllSessionsFiltered(
             Long employeeId,

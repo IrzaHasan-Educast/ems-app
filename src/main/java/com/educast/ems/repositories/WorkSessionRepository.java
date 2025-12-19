@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,7 +14,8 @@ import java.util.Optional;
 public interface WorkSessionRepository extends JpaRepository<WorkSession, Long> {
 
     Optional<WorkSession> findFirstByEmployeeIdAndClockOutIsNullOrderByClockInDesc(Long employeeId);
-    Optional<WorkSession> findByEmployeeIdAndClockOutIsNull(Long employeeId);
+    List<WorkSession> findByEmployeeIdAndClockOutIsNull(Long employeeId);
+    List<WorkSession> findByClockOutIsNullAndClockInBefore(LocalDateTime cutoff);
 
     List<WorkSession> findByEmployeeIdOrderByClockInDesc(Long employeeId);
     @Query("SELECT ws FROM WorkSession ws " +
@@ -28,4 +30,9 @@ public interface WorkSessionRepository extends JpaRepository<WorkSession, Long> 
              @Param("status") String status,
              @Param("month") Integer month
      );
+    
+    List<WorkSession> findByClockOutIsNullAndClockInAfter(LocalDateTime windowStart);
+    List<WorkSession> findTop3ByEmployeeIdOrderByClockInDesc(Long employeeId);
+
+
 }

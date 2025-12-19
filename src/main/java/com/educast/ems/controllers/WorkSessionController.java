@@ -98,5 +98,11 @@ public class WorkSessionController {
         return ResponseEntity.ok(resp);
     }
 
+    @GetMapping("/employee/{id}/latest-sessions")
+    public List<WorkSessionResponseDTO> getLatestSessions(@PathVariable Long id) {
+        return workSessionService.getLatest3SessionsByEmployee(id);
+    }
+
+
 
 }
