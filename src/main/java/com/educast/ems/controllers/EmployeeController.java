@@ -2,10 +2,8 @@ package com.educast.ems.controllers;
 
 import com.educast.ems.dto.EmployeeRequest;
 import com.educast.ems.dto.EmployeeResponse;
-import com.educast.ems.dto.UserResponse;
 import com.educast.ems.models.Employee;
 import com.educast.ems.services.EmployeeService;
-import com.educast.ems.services.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +19,6 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final UserService userService; // inject via constructor
 
 
     @GetMapping
@@ -76,29 +73,6 @@ public class EmployeeController {
         return ResponseEntity.ok("Employee " + status + " successfully");
     }
 
-    private EmployeeResponse mapToResponse(Employee employee) {
-        EmployeeResponse res = new EmployeeResponse();
-        res.setId(employee.getId());
-        res.setFullName(employee.getFullName());
-        res.setEmail(employee.getEmail());
-        res.setPhone(employee.getPhone());
-        res.setGender(employee.getGender());
-        res.setDepartment(employee.getDepartment());
-        res.setDesignation(employee.getDesignation());
-        res.setRole(employee.getRole());
-        res.setJoiningDate(employee.getJoiningDate());
-        res.setActive(employee.isActive());
-
-        // Fetch linked user safely
-        try {
-            UserResponse userResponse = userService.getUserByEmployeeId(employee.getId());
-            res.setUsername(userResponse.getUsername());
-        } catch (RuntimeException e) {
-            // user not found, ignore
-        }
-
-        return res;
-    }
 
 }
 

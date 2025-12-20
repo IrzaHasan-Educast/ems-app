@@ -1,17 +1,14 @@
 package com.educast.ems.services;
 
 import com.educast.ems.dto.BreakResponseDTO;
-import com.educast.ems.dto.WorkSessionHoursSyncDTO;
 import com.educast.ems.dto.WorkSessionRequestDTO;
 import com.educast.ems.dto.WorkSessionResponseDTO;
-import com.educast.ems.models.Break;
 import com.educast.ems.models.Employee;
 import com.educast.ems.models.WorkSession;
 import com.educast.ems.repositories.EmployeeRepository;
 import com.educast.ems.repositories.WorkSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -19,7 +16,6 @@ import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -240,45 +236,45 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         return dto;
     }
     
-    @Override
-    public WorkSessionResponseDTO syncSessionHours(
-            Long sessionId,
-            WorkSessionHoursSyncDTO dto
-    ) {
-
-        WorkSession session = workSessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session not found"));
-
-        // 🔒 safety checks
-        if (session.getClockOut() == null) {
-            throw new RuntimeException("Cannot sync an active session");
-        }
-
-        if (dto.getTotalWorkingHours() == null ||
-            dto.getTotalSessionHours() == null) {
-            throw new RuntimeException("Invalid duration data");
-        }
-
-        // 🧮 convert Duration → hours
-        double totalHours =
-                dto.getTotalWorkingHours().getSeconds() / 3600.0;
-
-        double totalSessionHours =
-                dto.getTotalSessionHours().getSeconds() / 3600.0;
-
-        double idleHours =
-                dto.getIdleTime() != null
-                        ? dto.getIdleTime().getSeconds() / 3600.0
-                        : 0;
-
-        session.setTotalHours(totalHours);
-        session.setIdleHours(idleHours);
-        session.setTotalSessionHours(totalSessionHours);
-        session.setStatus(resolveStatus(totalHours));
-
-        System.out.println("Hello World!");
-        return mapToDTO(workSessionRepository.save(session));
-    }
+//    @Override
+//    public WorkSessionResponseDTO syncSessionHours(
+//            Long sessionId,
+//            WorkSessionHoursSyncDTO dto
+//    ) {
+//
+//        WorkSession session = workSessionRepository.findById(sessionId)
+//                .orElseThrow(() -> new RuntimeException("Session not found"));
+//
+//        // 🔒 safety checks
+//        if (session.getClockOut() == null) {
+//            throw new RuntimeException("Cannot sync an active session");
+//        }
+//
+//        if (dto.getTotalWorkingHours() == null ||
+//            dto.getTotalSessionHours() == null) {
+//            throw new RuntimeException("Invalid duration data");
+//        }
+//
+//        // 🧮 convert Duration → hours
+//        double totalHours =
+//                dto.getTotalWorkingHours().getSeconds() / 3600.0;
+//
+//        double totalSessionHours =
+//                dto.getTotalSessionHours().getSeconds() / 3600.0;
+//
+//        double idleHours =
+//                dto.getIdleTime() != null
+//                        ? dto.getIdleTime().getSeconds() / 3600.0
+//                        : 0;
+//
+//        session.setTotalHours(totalHours);
+//        session.setIdleHours(idleHours);
+//        session.setTotalSessionHours(totalSessionHours);
+//        session.setStatus(resolveStatus(totalHours));
+//
+//        System.out.println("Hello World!");
+//        return mapToDTO(workSessionRepository.save(session));
+//    }
 
 
     /* ================= DTO MAPPING ================= */

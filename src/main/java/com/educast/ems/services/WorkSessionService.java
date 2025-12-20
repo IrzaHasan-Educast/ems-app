@@ -1,6 +1,5 @@
 package com.educast.ems.services;
 
-import com.educast.ems.dto.WorkSessionHoursSyncDTO;
 import com.educast.ems.dto.WorkSessionRequestDTO;
 import com.educast.ems.dto.WorkSessionResponseDTO;
 
@@ -21,9 +20,6 @@ public interface WorkSessionService {
     List<WorkSessionResponseDTO> getSessionsByEmployee(Long employeeId);
     public List<WorkSessionResponseDTO> getAllSessionsFiltered(
     Long employeeId, String status, Integer month, String searchTerm, int page, int size);
-    WorkSessionResponseDTO syncSessionHours(
-            Long sessionId,
-            WorkSessionHoursSyncDTO dto
-    );
+//    WorkSessionResponseDTO syncSessionHours(Long sessionId, WorkSessionHoursSyncDTO dto);
     public List<WorkSessionResponseDTO> getLatest3SessionsByEmployee(Long employeeId);
 }

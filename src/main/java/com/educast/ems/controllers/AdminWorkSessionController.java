@@ -1,6 +1,6 @@
 package com.educast.ems.controllers;
 
-import com.educast.ems.dto.WorkSessionHoursSyncDTO;
+//import com.educast.ems.dto.WorkSessionHoursSyncDTO;
 import com.educast.ems.dto.WorkSessionResponseDTO;
 import com.educast.ems.services.WorkSessionService;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +36,14 @@ public class AdminWorkSessionController {
         return workSessionService.getAllSessionsFiltered(employeeId, status, month, searchTerm, page, size);
     }
     
-    @PatchMapping("/{id}/sync-hours")
-    @PreAuthorize("hasAnyRole('ADMIN','HR')")
-    public WorkSessionResponseDTO syncSessionHours(
-            @PathVariable Long id,
-            @RequestBody WorkSessionHoursSyncDTO dto
-    ) {
-        return workSessionService.syncSessionHours(id, dto);
-    }
+//    @PatchMapping("/{id}/sync-hours")
+//    @PreAuthorize("hasAnyRole('ADMIN','HR')")
+//    public WorkSessionResponseDTO syncSessionHours(
+//            @PathVariable Long id,
+//            @RequestBody WorkSessionHoursSyncDTO dto
+//    ) {
+//        return workSessionService.syncSessionHours(id, dto);
+//    }
 
 
 }

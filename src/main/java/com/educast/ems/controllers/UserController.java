@@ -1,9 +1,7 @@
 package com.educast.ems.controllers;
 
-import com.educast.ems.dto.UpdateUserRequest;
 import com.educast.ems.dto.UserResponse;
 import com.educast.ems.dto.UserUpdateRequest;
-import com.educast.ems.models.User;
 import com.educast.ems.security.CustomUserDetails;
 import com.educast.ems.services.UserService;
 import lombok.RequiredArgsConstructor;

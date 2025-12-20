@@ -5,7 +5,6 @@ import com.educast.ems.models.User;
 import com.educast.ems.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

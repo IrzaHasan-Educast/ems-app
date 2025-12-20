@@ -69,20 +69,20 @@ public class WorkSessionAutoClockOutService {
         return workSessionRepository.findByClockOutIsNullAndClockInAfter(windowStart);
     }
     
-    @Transactional
-    public List<WorkSession> autoClockOutStaleSessions() {
-        LocalDateTime now = LocalDateTime.now(PK_ZONE);
-        LocalDateTime cutoff = now.minusHours(24); // 24 hours old sessions
-
-        return workSessionRepository.findByClockOutIsNullAndClockInBefore(cutoff);
-
-    }
+//    @Transactional
+//    public List<WorkSession> autoClockOutStaleSessions() {
+//        LocalDateTime now = LocalDateTime.now(PK_ZONE);
+//        LocalDateTime cutoff = now.minusHours(24); // 24 hours old sessions
+//
+//        return workSessionRepository.findByClockOutIsNullAndClockInBefore(cutoff);
+//
+//    }
 
     
-    @Transactional
-    public List<WorkSession> getLastSessionByEmployee(Long id) {
-//    	System.out.println("runs repo query");
-    	return  workSessionRepository.findByEmployeeIdAndClockOutIsNull(id);
-
-    }
+//    @Transactional
+//    public List<WorkSession> getLastSessionByEmployee(Long id) {
+////    	System.out.println("runs repo query");
+//    	return  workSessionRepository.findByEmployeeIdAndClockOutIsNull(id);
+//
+//    }
 }

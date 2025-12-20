@@ -45,14 +45,14 @@ public class AutoClockOutScheduler {
         sessions.forEach(autoClockOutService::autoClockOutSession);
     }
     
-    @Scheduled(cron = "0 0 13 * * ?")
-    @Transactional
-    public void outClockOutNow() {
-    	System.out.println(1);
-    	List<WorkSession> sessions = autoClockOutService.autoClockOutStaleSessions();
-
-    	System.out.println(2);
-    	sessions.forEach(autoClockOutService::autoClockOutSession);
-    }
+//    @Scheduled(cron = "0 0 13 * * ?")
+//    @Transactional
+//    public void outClockOutNow() {
+//    	System.out.println(1);
+//    	List<WorkSession> sessions = autoClockOutService.autoClockOutStaleSessions();
+//
+//    	System.out.println(2);
+//    	sessions.forEach(autoClockOutService::autoClockOutSession);
+//    }
 }
 

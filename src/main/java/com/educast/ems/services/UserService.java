@@ -1,6 +1,5 @@
 package com.educast.ems.services;
 
-import java.util.Optional;
 
 import com.educast.ems.dto.UserResponse;
 import com.educast.ems.models.User;
