@@ -33,6 +33,9 @@ public class BreakServiceImpl implements BreakService {
         brk.setEndTime(null); // Not ended yet
         brk.setDurationHours(null); // Will be calculated on end
 
+        session.setStatus("On Break");
+        System.out.println(session.getStatus());
+        workSessionRepository.save(session);
         Break saved = breakRepository.save(brk);
         return mapToDTO(saved);
     }
@@ -57,8 +60,14 @@ public class BreakServiceImpl implements BreakService {
             throw new RuntimeException("Break start time missing");
         }
         Duration duration = Duration.between(brk.getStartTime(), brk.getEndTime());
-        brk.setDurationHours(duration.toSeconds() / 3600.0);
+        double breakHrs = duration.toSeconds() / 3600.0;
+        brk.setDurationHours(breakHrs);
 
+        WorkSession session = brk.getWorkSession();
+        if(session.getIdleHours()!= null) session.setIdleHours(session.getIdleHours()+breakHrs);
+        else session.setIdleHours(breakHrs);
+        session.setStatus("Working");
+        workSessionRepository.save(session);
         Break saved = breakRepository.save(brk);
         return mapToDTO(saved);
     }

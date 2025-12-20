@@ -3,6 +3,7 @@ package com.educast.ems.services;
 import com.educast.ems.dto.BreakResponseDTO;
 import com.educast.ems.dto.WorkSessionRequestDTO;
 import com.educast.ems.dto.WorkSessionResponseDTO;
+import com.educast.ems.dto.WorkSessionTableDTO;
 import com.educast.ems.models.Employee;
 import com.educast.ems.models.WorkSession;
 import com.educast.ems.repositories.EmployeeRepository;
@@ -117,12 +118,8 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
     @Override
     public List<WorkSessionResponseDTO> getAllSessions() {
-        return workSessionRepository.findAll().stream()
-                .sorted(Comparator.comparing(
-                        WorkSession::getClockIn,
-                        Comparator.nullsLast(Comparator.reverseOrder())
-                ))
-                .map(this::mapToDTO)
+        return workSessionRepository.findAllForAdmin().stream()
+                .map(this::mapToDTO2)
                 .toList();
     }
 
@@ -346,6 +343,43 @@ public class WorkSessionServiceImpl implements WorkSessionService {
             dto.setBreaks(List.of());
             dto.setOnBreak(false);
         }
+
+        return dto;
+    }
+    
+    private WorkSessionResponseDTO mapToDTO2(WorkSessionTableDTO session) {
+
+        WorkSessionResponseDTO dto = new WorkSessionResponseDTO();
+        dto.setId(session.getId());
+        dto.setEmployeeName(session.getEmployeeName());
+        dto.setClockInTime(session.getClockInTime());
+        dto.setClockOutTime(session.getClockOutTime());
+        dto.setStatus(session.getStatus());
+
+        if (session.getTotalWorkingHours() != null) {
+            dto.setTotalWorkingHours(
+                    Duration.ofSeconds(
+                            Math.round(session.getTotalWorkingHours() * 3600)
+                    )
+            );
+        }
+
+        if (session.getTotalSessionHours() != null) {
+            dto.setTotalSessionHours(
+                    Duration.ofSeconds(
+                            Math.round(session.getTotalSessionHours() * 3600)
+                    )
+            );
+        }
+
+        if (session.getIdleHours() != null) {
+            dto.setIdleTime(
+                    Duration.ofSeconds(
+                            Math.round(session.getIdleHours() * 3600)
+                    )
+            );
+        }
+
 
         return dto;
     }

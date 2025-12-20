@@ -1,5 +1,6 @@
 package com.educast.ems.repositories;
 
+import com.educast.ems.dto.WorkSessionTableDTO;
 import com.educast.ems.models.WorkSession;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,7 +31,23 @@ public interface WorkSessionRepository extends JpaRepository<WorkSession, Long> 
              @Param("status") String status,
              @Param("month") Integer month
      );
-    
+    @Query("""
+    		SELECT new com.educast.ems.dto.WorkSessionTableDTO(
+    		    ws.id,
+    		    e.fullName,
+    		    ws.clockIn,
+    		    ws.clockOut,
+    		    ws.totalHours,
+    		    ws.idleHours,
+    		    ws.totalSessionHours,
+    		    ws.status
+    		)
+    		FROM WorkSession ws
+    		JOIN ws.employee e
+    		ORDER BY ws.clockIn DESC
+    		""")
+    		List<WorkSessionTableDTO> findAllForAdmin();
+
     List<WorkSession> findByClockOutIsNullAndClockInAfter(LocalDateTime windowStart);
     List<WorkSession> findTop3ByEmployeeIdOrderByClockInDesc(Long employeeId);
 
