@@ -1,6 +1,7 @@
 package com.educast.ems.services;
 
 import com.educast.ems.dto.BreakResponseDTO;
+import com.educast.ems.dto.WorkSessionEmployeeTableDTO;
 import com.educast.ems.dto.WorkSessionRequestDTO;
 import com.educast.ems.dto.WorkSessionResponseDTO;
 import com.educast.ems.dto.WorkSessionTableDTO;
@@ -10,6 +11,7 @@ import com.educast.ems.repositories.EmployeeRepository;
 import com.educast.ems.repositories.WorkSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -53,6 +55,7 @@ public class WorkSessionServiceImpl implements WorkSessionService {
     /* ================= CLOCK OUT ================= */
 
     @Override
+    @Transactional
     public WorkSessionResponseDTO clockOut(Long id) {
 
         WorkSession session = workSessionRepository.findById(id)
@@ -109,12 +112,12 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
     @Override
     public List<WorkSessionResponseDTO> getSessionsByEmployee(Long employeeId) {
-        return workSessionRepository
-                .findByEmployeeIdOrderByClockInDesc(employeeId)
+        return workSessionRepository.findAllForEmployee(employeeId)
                 .stream()
-                .map(this::mapToDTO)
+                .map(this::mapEmployeeTableDTO)
                 .toList();
     }
+
 
     @Override
     public List<WorkSessionResponseDTO> getAllSessions() {
@@ -383,4 +386,35 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
         return dto;
     }
+
+    private WorkSessionResponseDTO mapEmployeeTableDTO(WorkSessionEmployeeTableDTO s) {
+
+        WorkSessionResponseDTO dto = new WorkSessionResponseDTO();
+
+        dto.setId(s.getId());
+        dto.setClockInTime(s.getClockIn());
+        dto.setClockOutTime(s.getClockOut());
+        dto.setStatus(s.getStatus());
+
+        if (s.getTotalHours() != null) {
+            dto.setTotalWorkingHours(
+                Duration.ofSeconds(Math.round(s.getTotalHours() * 3600))
+            );
+        }
+
+        if (s.getIdleHours() != null) {
+            dto.setIdleTime(
+                Duration.ofSeconds(Math.round(s.getIdleHours() * 3600))
+            );
+        }
+
+        if (s.getTotalSessionHours() != null) {
+            dto.setTotalSessionHours(
+                Duration.ofSeconds(Math.round(s.getTotalSessionHours() * 3600))
+            );
+        }
+
+        return dto;
+    }
+
 }

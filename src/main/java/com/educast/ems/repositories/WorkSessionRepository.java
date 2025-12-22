@@ -1,5 +1,6 @@
 package com.educast.ems.repositories;
 
+import com.educast.ems.dto.WorkSessionEmployeeTableDTO;
 import com.educast.ems.dto.WorkSessionTableDTO;
 import com.educast.ems.models.WorkSession;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +19,23 @@ public interface WorkSessionRepository extends JpaRepository<WorkSession, Long> 
     List<WorkSession> findByEmployeeIdAndClockOutIsNull(Long employeeId);
     List<WorkSession> findByClockOutIsNullAndClockInBefore(LocalDateTime cutoff);
 
+    @Query("""
+    		SELECT new com.educast.ems.dto.WorkSessionEmployeeTableDTO(
+    		    ws.id,
+    		    ws.clockIn,
+    		    ws.clockOut,
+    		    ws.totalHours,
+    		    ws.idleHours,
+    		    ws.totalSessionHours,
+    		    ws.status
+    		)
+    		FROM WorkSession ws
+    		WHERE ws.employee.id = :employeeId
+    		ORDER BY ws.clockIn DESC
+    		""")
+    		List<WorkSessionEmployeeTableDTO> findAllForEmployee(@Param("employeeId") Long employeeId);
+
+    
     List<WorkSession> findByEmployeeIdOrderByClockInDesc(Long employeeId);
     @Query("SELECT ws FROM WorkSession ws " +
             "JOIN FETCH ws.employee e " +
