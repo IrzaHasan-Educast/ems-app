@@ -1,14 +1,18 @@
-# Base image
-FROM eclipse-temurin:25-jdk-alpine
-
-# App directory
+# ---------- BUILD STAGE ----------
+FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Maven build se generated jar copy karo
-COPY target/ems-0.0.1-SNAPSHOT.jar app.jar
+COPY pom.xml .
+RUN mvn -B dependency:go-offline
 
-# Port expose karo
+COPY src ./src
+RUN mvn -DskipTests package
+
+# ---------- RUN STAGE ----------
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
-
-# App run karo
 ENTRYPOINT ["java","-jar","app.jar"]

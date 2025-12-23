@@ -65,8 +65,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
      // ✅ convert comma-separated frontend URLs into list
-        List<String> allowedOrigins = Arrays.asList(frontendUrl.split(","));
-        configuration.setAllowedOrigins(allowedOrigins);
+//        List<String> allowedOrigins = Arrays.asList(frontendUrl.split(","));
+//        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedOrigins(List.of(frontendUrl));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
