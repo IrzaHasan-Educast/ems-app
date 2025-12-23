@@ -23,7 +23,7 @@ public class AutoClockOutScheduler {
    
 
     // Morning job: 6 AM, 10-hour range (8 PM previous day → 6 AM)
-    @Scheduled(cron = "0 0 6 * * ?")
+    @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Karachi")
     @Transactional
     public void autoClockOutMorning() {
         LocalDateTime now = LocalDateTime.now(PK_ZONE);
@@ -34,7 +34,7 @@ public class AutoClockOutScheduler {
     }
 
     // Evening job: 7 PM, 10-hour range (9 AM → 7 PM)
-    @Scheduled(cron = "0 0 19 * * ?")
+    @Scheduled(cron = "0 0 19 * * ?", zone = "Asia/Karachi")
     @Transactional
     public void autoClockOutEvening() {
         LocalDateTime now = LocalDateTime.now(PK_ZONE);
@@ -45,7 +45,7 @@ public class AutoClockOutScheduler {
         sessions.forEach(autoClockOutService::autoClockOutSession);
     }
     
-//    @Scheduled(cron = "0 0 13 * * ?")
+//    @Scheduled(cron = "0 45 11 * * ?", zone = "Asia/Karachi")
 //    @Transactional
 //    public void outClockOutNow() {
 //    	System.out.println(1);

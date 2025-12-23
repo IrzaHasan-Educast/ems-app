@@ -72,7 +72,7 @@ public class WorkSessionAutoClockOutService {
 //    @Transactional
 //    public List<WorkSession> autoClockOutStaleSessions() {
 //        LocalDateTime now = LocalDateTime.now(PK_ZONE);
-//        LocalDateTime cutoff = now.minusHours(24); // 24 hours old sessions
+//        LocalDateTime cutoff = now.minusHours(10); // 10 hours old sessions
 //
 //        return workSessionRepository.findByClockOutIsNullAndClockInBefore(cutoff);
 //
