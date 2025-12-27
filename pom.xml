@@ -12,7 +12,7 @@
 	<artifactId>ems</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ems-backend</name>
-	<description>Employee Management System (EMS) backend REST API using Spring Boot + MySQL</description>
+	<description>Employee Management System (EMS) backend REST API using Spring Boot + Postgres</description>
 	<url/>
 	<licenses>
 		<license/>

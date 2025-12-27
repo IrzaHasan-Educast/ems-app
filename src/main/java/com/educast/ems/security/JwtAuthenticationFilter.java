@@ -21,19 +21,20 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserService userService; // service to fetch User from DB
+    private final UserService userService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/api/v1/auth");
+    }
 
-        String path = request.getRequestURI();
-
-        // Skip auth endpoints
-        if (path.startsWith("/api/v1/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
 
@@ -43,14 +44,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String username = jwtUtil.extractClaims(token).getSubject();
                 String role = (String) jwtUtil.extractClaims(token).get("role");
 
-                // ✅ Fetch full User entity from DB
                 User user = userService.findByUsername(username);
                 if (user != null) {
                     CustomUserDetails customUser = new CustomUserDetails(user);
 
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
-                                    customUser, // ✅ principal
+                                    customUser,
                                     null,
                                     List.of(new SimpleGrantedAuthority("ROLE_" + role))
                             );

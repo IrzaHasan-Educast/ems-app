@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,45 +17,61 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableMethodSecurity(prePostEnabled = true) // ensures @PreAuthorize works
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-	// ✅ frontend URLs from application.properties (comma-separated)
+    // Support comma-separated origins
     @Value("${frontend.url}")
     private String frontendUrl;
+
     private final JwtAuthenticationFilter jwtFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .csrf(csrf -> csrf.disable()) // disable CSRF for APIs
+            .csrf(csrf -> csrf.disable())
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable())
+
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
             .authorizeHttpRequests(auth -> auth
+                // CORS preflight
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // Public endpoints
                 .requestMatchers("/api/v1/auth/**").permitAll()
-//                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/v1/users/me").hasAnyRole("ADMIN", "HR") // <-- add this line
+
+                // Optional (uncomment if you use these)
+                // .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // .requestMatchers("/actuator/health").permitAll()
+
+                // Role protected routes
+                .requestMatchers("/api/v1/users/me").hasAnyRole("ADMIN", "HR")
                 .requestMatchers("/api/v1/employees/**").hasAnyRole("ADMIN", "HR")
+
                 .requestMatchers("/api/v1/work-sessions/**").hasRole("EMPLOYEE")
                 .requestMatchers("/api/v1/admin/work-sessions/**").hasAnyRole("ADMIN", "HR")
-                // Attendance
-                .requestMatchers("/api/v1/attendance/my/**").hasRole("EMPLOYEE") // only employee
-                .requestMatchers("/api/v1/attendance/all/**").hasAnyRole("ADMIN", "HR")   
-                .requestMatchers("/api/v1/attendance/mark/**").hasRole("EMPLOYEE") // employee marking
-                // Leaves
-                .requestMatchers("/api/v1/leaves").hasRole("EMPLOYEE") // apply leave (POST)
-                .requestMatchers("/api/v1/leaves/admin").hasAnyRole("ADMIN", "HR") // apply leave (POST)
-                .requestMatchers("/api/v1/leaves/employee/**").hasRole("EMPLOYEE") // get own leaves
+
+                .requestMatchers("/api/v1/attendance/my/**").hasRole("EMPLOYEE")
+                .requestMatchers("/api/v1/attendance/all/**").hasAnyRole("ADMIN", "HR")
+                .requestMatchers("/api/v1/attendance/mark/**").hasRole("EMPLOYEE")
+
+                .requestMatchers("/api/v1/leaves").hasRole("EMPLOYEE")
+                .requestMatchers("/api/v1/leaves/admin").hasAnyRole("ADMIN", "HR")
+                .requestMatchers("/api/v1/leaves/employee/**").hasRole("EMPLOYEE")
                 .requestMatchers("/api/v1/leaves/types").hasAnyRole("EMPLOYEE", "ADMIN", "HR")
-                // Admin + HR
                 .requestMatchers("/api/v1/leaves/**").hasAnyRole("ADMIN", "HR")
+
                 .anyRequest().authenticated()
-                
-            )
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())); // use CORS bean
+            );
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -64,11 +81,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-     // ✅ convert comma-separated frontend URLs into list
-//        List<String> allowedOrigins = Arrays.asList(frontendUrl.split(","));
-//        configuration.setAllowedOrigins(allowedOrigins);
+
+        // Allow multiple origins separated by comma in properties
+//        List<String> origins = Arrays.stream(frontendUrl.split(","))
+//                .map(String::trim)
+//                .filter(s -> !s.isEmpty())
+//                .collect(Collectors.toList());
+
+//        configuration.setAllowedOrigins(origins);
         configuration.setAllowedOrigins(List.of(frontendUrl));
-        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
@@ -76,5 +98,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 }

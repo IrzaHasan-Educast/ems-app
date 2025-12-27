@@ -64,3 +64,6 @@ application-*.yml
 application-*.properties
 application.properties
 config.properties
+
+#Docker Image
+Dockerfile
