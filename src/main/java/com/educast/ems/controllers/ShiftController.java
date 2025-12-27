@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/shifts")
+@RequestMapping("/api/v1/shifts")
 @RequiredArgsConstructor
 public class ShiftController {
 

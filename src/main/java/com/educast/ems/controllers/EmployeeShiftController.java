@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/employee-shifts")
+@RequestMapping("/api/v1/employee-shifts")
 @RequiredArgsConstructor
 public class EmployeeShiftController {
 
