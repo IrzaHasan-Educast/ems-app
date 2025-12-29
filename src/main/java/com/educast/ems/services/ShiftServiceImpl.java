@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ShiftServiceImpl implements ShiftService{
-	private ShiftsRepository repo;
+	private final ShiftsRepository repo;
 	
 
 	@Override
@@ -63,6 +63,10 @@ public class ShiftServiceImpl implements ShiftService{
 	
 	private ShiftResponseDTO mapToDto(Shifts shift){
 		ShiftResponseDTO dto = new ShiftResponseDTO();
+		dto.setId(shift.getId());
+		System.out.println(shift.getShiftName());
+		System.out.println(shift.getStartsAt());
+		System.out.println(shift.getEndsAt());
 		dto.setShiftName(shift.getShiftName());
 		dto.setStartsAt(shift.getStartsAt());
 		dto.setEndsAt(shift.getEndsAt());

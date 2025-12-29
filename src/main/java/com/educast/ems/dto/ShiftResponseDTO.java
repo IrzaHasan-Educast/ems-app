@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class ShiftResponseDTO {
+	private Long id;
 	private String shiftName;
 	private LocalTime startsAt;
 	private LocalTime endsAt;

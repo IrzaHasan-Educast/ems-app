@@ -16,7 +16,6 @@ public class Shifts {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@Column(unique = true)
 	private String shiftName;
 	private LocalTime startsAt;
 	private LocalTime endsAt;
