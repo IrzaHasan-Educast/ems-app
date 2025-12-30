@@ -33,10 +33,15 @@ public class ShiftController {
         return ResponseEntity.ok("Shift added successfully");
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ShiftResponseDTO> getShiftById(@PathVariable Long id){
+        return ResponseEntity.ok(shiftService.getShiftById(id));
+    }
+    
     // Update shift
-    @PutMapping
-    public ResponseEntity<String> updateShift(@RequestBody ShiftRequestDTO dto) {
-        shiftService.updateShift(dto);
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateShift(@PathVariable Long id, @RequestBody ShiftRequestDTO dto) {
+        shiftService.updateShift(id, dto);
         return ResponseEntity.ok("Shift updated successfully");
     }
 

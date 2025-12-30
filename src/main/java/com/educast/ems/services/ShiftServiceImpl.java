@@ -2,7 +2,6 @@ package com.educast.ems.services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.educast.ems.dto.ShiftRequestDTO;
@@ -29,8 +28,8 @@ public class ShiftServiceImpl implements ShiftService{
 	}
 
 	@Override
-	public void updateShift(ShiftRequestDTO dto) {
-		Shifts updatedShift = repo.findById(dto.getId())
+	public void updateShift(Long id, ShiftRequestDTO dto) {
+		Shifts updatedShift = repo.findById(id)
 				.orElseThrow(()-> new RuntimeException("Id not found"));
 		if(dto.getShiftName()!= null) {
 			updatedShift.setShiftName(dto.getShiftName());
@@ -61,6 +60,13 @@ public class ShiftServiceImpl implements ShiftService{
                 .toList();
 	}
 	
+	@Override
+	public ShiftResponseDTO getShiftById(Long id) {
+		Shifts shift = repo.findById(id)
+				.orElseThrow(()-> new RuntimeException("shift not found"));
+		return mapToDto(shift);
+	}
+	
 	private ShiftResponseDTO mapToDto(Shifts shift){
 		ShiftResponseDTO dto = new ShiftResponseDTO();
 		dto.setId(shift.getId());
@@ -74,5 +80,7 @@ public class ShiftServiceImpl implements ShiftService{
 		return dto;
 		
 	}
+
+
 
 }

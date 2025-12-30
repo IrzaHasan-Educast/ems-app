@@ -8,5 +8,6 @@ import com.educast.ems.models.EmployeeShift;
 
 public interface EmployeeShiftRepository extends JpaRepository<EmployeeShift, Long> {
     Optional<EmployeeShift> findByEmployeeId(Long employeeId);
+    
 
 }

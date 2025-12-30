@@ -3,6 +3,7 @@ package com.educast.ems.services;
 import org.springframework.stereotype.Service;
 
 import com.educast.ems.dto.EmployeeShiftRequestDTO;
+import com.educast.ems.dto.EmployeeShiftResponseDTO;
 import com.educast.ems.models.Employee;
 import com.educast.ems.models.EmployeeShift;
 import com.educast.ems.models.Shifts;
@@ -19,7 +20,12 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
     private final EmployeeShiftRepository employeeShiftRepo;
     private final EmployeeRepository employeeRepo;
     private final ShiftsRepository shiftsRepo;
-
+	@Override
+	
+		public EmployeeShiftResponseDTO getAllEmployeeShifts() {
+		
+			return null;
+		}
     @Override
     public void assignedShift(Long empId, Long shiftId) {
 
@@ -65,4 +71,6 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
         employeeShift.setShift(newShift);
         employeeShiftRepo.save(employeeShift);
     }
+
+	
 }
