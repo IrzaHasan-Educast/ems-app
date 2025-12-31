@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Data
@@ -16,7 +18,15 @@ public class Shifts {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@Column(unique = true)
 	private String shiftName;
 	private LocalTime startsAt;
 	private LocalTime endsAt;
+	
+	  // ✅ Manager relation
+    @ManyToOne
+    @JoinColumn(name = "manager_id") // FK column in shift table
+    private Employee manager;
+
 }

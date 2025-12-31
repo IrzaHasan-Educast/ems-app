@@ -10,5 +10,7 @@ public class ShiftRequestDTO {
 	private String shiftName;
 	private LocalTime startsAt;
 	private LocalTime endsAt;
+    private Long managerId; // ✅ manager selected from dropdown
+
 
 }

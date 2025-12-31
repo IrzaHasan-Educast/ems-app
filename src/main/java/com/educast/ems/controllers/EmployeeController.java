@@ -1,6 +1,7 @@
 package com.educast.ems.controllers;
 
 import com.educast.ems.dto.EmployeeRequest;
+import com.educast.ems.dto.EmployeeResByRoleDTO;
 import com.educast.ems.dto.EmployeeResponse;
 import com.educast.ems.models.Employee;
 import com.educast.ems.services.EmployeeService;
@@ -12,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/api/v1/employees")
@@ -72,6 +75,13 @@ public class EmployeeController {
         String status = employee.isActive() ? "activated" : "deactivated";
         return ResponseEntity.ok("Employee " + status + " successfully");
     }
+    
+    @GetMapping("role/{role}")
+    public ResponseEntity<List<EmployeeResByRoleDTO>> findByRole(@PathVariable String role) {
+        List<EmployeeResByRoleDTO> managers = employeeService.findByRole(role);
+        return ResponseEntity.ok(managers);
+    }
+    
 
 
 }

@@ -6,14 +6,18 @@ import com.educast.ems.models.User;
 import com.educast.ems.repositories.EmployeeRepository;
 import com.educast.ems.repositories.UserRepository;
 import com.educast.ems.dto.EmployeeRequest;
+import com.educast.ems.dto.EmployeeResByRoleDTO;
 import com.educast.ems.dto.EmployeeResponse;
 import com.educast.ems.dto.WorkSessionResponseDTO;
+import com.educast.ems.exception.DuplicateResourceException;
+import com.educast.ems.exception.DuplicateResourceException;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,30 +46,49 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .map(this::mapToDto);
     }
 
-    @Override
-    public EmployeeResponse createEmployee(Employee employee, String username, String password) {
-        if (password == null || password.length() < 6) {
-            throw new IllegalArgumentException("Password must be at least 6 characters");
-        }
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("Username already exists");
-        }
+	@Override
+	@Transactional
+	public EmployeeResponse createEmployee(Employee employee, String username, String password) {
+	
+	    if (password == null || password.length() < 6) {
+	        throw new IllegalArgumentException("Password must be at least 6 characters");
+	    }
+	
+	    // ✅ username check
+	    if (userRepository.findByUsername(username).isPresent()) {
+	        throw new DuplicateResourceException("Username already exists");
+	    }
+	
+	    // ✅ email check (THIS WAS MISSING)
+	    if (employeeRepository.existsByEmail(employee.getEmail())) {
+	        throw new DuplicateResourceException("Email already exists");
+	    }
+	
+	    Employee savedEmployee = employeeRepository.save(employee);
+	
+	    User user = new User();
+	    user.setEmployee(savedEmployee);
+	    user.setUsername(username);
+	    user.setPasswordHash(passwordEncoder.encode(password));
+	
+	    switch (employee.getRole().toUpperCase()) {
+	        case "ADMIN" -> user.setRole(Role.ADMIN);
+	        case "HR" -> user.setRole(Role.HR);
+	        case "MANAGER" -> user.setRole(Role.MANAGER);
+	        default -> user.setRole(Role.EMPLOYEE);
+	    }
+	
+	    userRepository.save(user);
+	
+	    return mapToDto(savedEmployee);
+	}
+	
+	@Override
+	public List<EmployeeResByRoleDTO> findByRole(String role){
+		List<Employee> emp = employeeRepository.findByRole(role);
+		return emp.stream().map(this:: mapToEmpRoleDto).toList();
+	}
 
-        Employee savedEmployee = employeeRepository.save(employee);
-
-        User user = new User();
-        user.setEmployee(savedEmployee);
-        user.setUsername(username);
-        user.setPasswordHash(passwordEncoder.encode(password));
-
-        if ("ADMIN".equalsIgnoreCase(employee.getRole())) user.setRole(Role.ADMIN);
-        else if ("HR".equalsIgnoreCase(employee.getRole())) user.setRole(Role.HR);
-        else user.setRole(Role.EMPLOYEE);
-
-        userRepository.save(user);
-        EmployeeResponse savedEmpResponse = mapToDto(savedEmployee);
-        return savedEmpResponse;
-    }
 
     @Override
 	public EmployeeResponse updateEmployee(Long id, EmployeeRequest request) {
@@ -142,6 +165,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         // dto.setUsername(emp.getUser() != null ? emp.getUser().getUsername() : null);
 
         return dto;
+    }
+    
+    private EmployeeResByRoleDTO mapToEmpRoleDto(Employee emp) {
+    	EmployeeResByRoleDTO dto = new EmployeeResByRoleDTO();
+    	dto.setId(emp.getId());
+    	dto.setFullName(emp.getFullName());
+    	dto.setRole(emp.getRole());
+    	return dto;
     }
     
     private String getCurrentUserRole() {

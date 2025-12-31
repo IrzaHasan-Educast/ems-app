@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 
 import com.educast.ems.dto.ShiftRequestDTO;
 import com.educast.ems.dto.ShiftResponseDTO;
+import com.educast.ems.models.Employee;
 import com.educast.ems.models.Shifts;
+import com.educast.ems.repositories.EmployeeRepository;
 import com.educast.ems.repositories.ShiftsRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ShiftServiceImpl implements ShiftService{
 	private final ShiftsRepository repo;
+	private final EmployeeRepository empRepo;
 	
 
 	@Override
@@ -23,7 +26,11 @@ public class ShiftServiceImpl implements ShiftService{
 		shifts.setShiftName(dto.getShiftName());
 		shifts.setStartsAt(dto.getStartsAt());
 		shifts.setEndsAt(dto.getEndsAt());
-		repo.save(shifts);
+		if(dto.getManagerId() != null){
+	        Employee manager = empRepo.findById(dto.getManagerId())
+	        		.orElseThrow(()-> new RuntimeException("Id not found "));
+	        shifts.setManager(manager);
+	    }		repo.save(shifts);
 		
 	}
 
@@ -76,6 +83,8 @@ public class ShiftServiceImpl implements ShiftService{
 		dto.setShiftName(shift.getShiftName());
 		dto.setStartsAt(shift.getStartsAt());
 		dto.setEndsAt(shift.getEndsAt());
+		dto.setManagerId(shift.getManager().getId());
+		dto.setManagerName(shift.getManager().getFullName());
 		
 		return dto;
 		
