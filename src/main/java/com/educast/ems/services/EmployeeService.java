@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface EmployeeService {
     List<EmployeeResponse> getAllEmployees();
     Optional<EmployeeResponse> getEmployeeById(Long id);
-    EmployeeResponse createEmployee(Employee employee, String username, String password);
+    EmployeeResponse createEmployee(EmployeeRequest dto);
     EmployeeResponse updateEmployee(Long id, EmployeeRequest request);
     void deleteEmployee(Long id);
     EmployeeResponse toggleActive(Long id);

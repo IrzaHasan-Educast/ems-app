@@ -18,4 +18,5 @@ public class EmployeeRequest {
     // User credentials
     private String username;
     private String password;
+    private Long shiftId;
 }

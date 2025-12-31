@@ -1,5 +1,7 @@
 package com.educast.ems.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,5 +48,22 @@ public class EmployeeShiftController {
         employeeShiftService.deleteAssignedShift(id);
         return ResponseEntity.ok("Assigned shift deleted successfully");
     }
+    
+    @GetMapping("/employeeId/{empId}")
+    public EmployeeShiftResponseDTO getEmployeeShiftByEmployeeId(@PathVariable Long empId) {
+    	return employeeShiftService.getEmployeeShiftsByEmpId(empId);
+    }
+    
+    
+    @GetMapping("/shiftId/{shiftId}")
+    public EmployeeShiftResponseDTO getEmployeeShiftByShiftId(@PathVariable Long shiftId) {
+    	return employeeShiftService.getEmployeeShiftsByEmpId(shiftId);
+    }
+    
+    @GetMapping
+    public List<EmployeeShiftResponseDTO> getAllEmployeeShifts() {
+    	return employeeShiftService.getAllEmployeeShifts();
+    }
+    
 }
 

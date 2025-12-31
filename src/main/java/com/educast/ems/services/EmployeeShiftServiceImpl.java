@@ -1,5 +1,8 @@
 package com.educast.ems.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.educast.ems.dto.EmployeeShiftRequestDTO;
@@ -20,12 +23,15 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
     private final EmployeeShiftRepository employeeShiftRepo;
     private final EmployeeRepository employeeRepo;
     private final ShiftsRepository shiftsRepo;
+    
 	@Override
+	public List<EmployeeShiftResponseDTO> getAllEmployeeShifts() {
+		List<EmployeeShift> empShifts =  employeeShiftRepo.findAll();
+		return empShifts.stream()
+		        .map(this::mapToDto)
+		        .collect(Collectors.toList());
+	}
 	
-		public EmployeeShiftResponseDTO getAllEmployeeShifts() {
-		
-			return null;
-		}
     @Override
     public void assignedShift(Long empId, Long shiftId) {
 
@@ -72,5 +78,34 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
         employeeShiftRepo.save(employeeShift);
     }
 
-	
+	@Override
+	public EmployeeShiftResponseDTO getEmployeeShiftsByEmpId(Long id) {
+		EmployeeShift empShift =  employeeShiftRepo.findByEmployeeId(id)
+				.orElseThrow(()-> new RuntimeException("Shift not found with employee id"));
+		
+		return this.mapToDto(empShift);
+	}
+
+	@Override
+	public List<EmployeeShiftResponseDTO> getEmployeeShiftsByShiftId(Long id) {
+		List<EmployeeShift> empShifts =  employeeShiftRepo.findByShiftId(id);
+		if(!empShifts.isEmpty()) {
+			return empShifts.stream()
+			        .map(this::mapToDto)
+			        .collect(Collectors.toList());
+		}
+		return null;
+		
+		
+	}
+
+	private EmployeeShiftResponseDTO mapToDto(EmployeeShift empShift){
+		EmployeeShiftResponseDTO dto = new EmployeeShiftResponseDTO();
+		dto.setEmpId(empShift.getEmployee().getId());
+		dto.setEmpName(empShift.getEmployee().getFullName());
+		dto.setShiftId(empShift.getShift().getId());
+		dto.setShiftName(empShift.getShift().getShiftName());
+		
+		return dto;
+	}
 }

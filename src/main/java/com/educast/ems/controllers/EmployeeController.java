@@ -41,18 +41,8 @@ public class EmployeeController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','HR')")
     public EmployeeResponse createEmployee(@RequestBody EmployeeRequest dto) {
-        Employee employee = new Employee();
-        employee.setFullName(dto.getFullName());
-        employee.setEmail(dto.getEmail());
-        employee.setPhone(dto.getPhone());
-        employee.setGender(dto.getGender());
-        employee.setDepartment(dto.getDepartment());
-        employee.setDesignation(dto.getDesignation());
-        employee.setRole(dto.getRole());
-        employee.setJoiningDate(dto.getJoiningDate());
-        employee.setActive(dto.isActive());
 
-        return employeeService.createEmployee(employee, dto.getUsername(), dto.getPassword());
+        return employeeService.createEmployee(dto);
     }
 
     @PutMapping("/{id}")

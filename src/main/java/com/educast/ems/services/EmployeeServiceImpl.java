@@ -31,6 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final WorkSessionService workSession;
+    private final EmployeeShiftService employeeShiftService;
 
     @Override
     public List<EmployeeResponse> getAllEmployees() {
@@ -48,14 +49,24 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	@Transactional
-	public EmployeeResponse createEmployee(Employee employee, String username, String password) {
+	public EmployeeResponse createEmployee(EmployeeRequest dto) {
+		Employee employee = new Employee();
+        employee.setFullName(dto.getFullName());
+        employee.setEmail(dto.getEmail());
+        employee.setPhone(dto.getPhone());
+        employee.setGender(dto.getGender());
+        employee.setDepartment(dto.getDepartment());
+        employee.setDesignation(dto.getDesignation());
+        employee.setRole(dto.getRole());
+        employee.setJoiningDate(dto.getJoiningDate());
+        employee.setActive(dto.isActive());
 	
-	    if (password == null || password.length() < 6) {
+	    if (dto.getPassword() == null || dto.getPassword().length() < 6) {
 	        throw new IllegalArgumentException("Password must be at least 6 characters");
 	    }
 	
 	    // ✅ username check
-	    if (userRepository.findByUsername(username).isPresent()) {
+	    if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
 	        throw new DuplicateResourceException("Username already exists");
 	    }
 	
@@ -65,11 +76,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 	    }
 	
 	    Employee savedEmployee = employeeRepository.save(employee);
-	
+	    
+	    if ("EMPLOYEE".equalsIgnoreCase(savedEmployee.getRole()) && dto.getShiftId() != null) {
+	        employeeShiftService.assignedShift(savedEmployee.getId(), dto.getShiftId());
+	    }
 	    User user = new User();
 	    user.setEmployee(savedEmployee);
-	    user.setUsername(username);
-	    user.setPasswordHash(passwordEncoder.encode(password));
+	    user.setUsername(dto.getUsername());
+	    user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
 	
 	    switch (employee.getRole().toUpperCase()) {
 	        case "ADMIN" -> user.setRole(Role.ADMIN);
@@ -83,7 +97,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 	    return mapToDto(savedEmployee);
 	}
 	
-	@Override
 	public List<EmployeeResByRoleDTO> findByRole(String role){
 		List<Employee> emp = employeeRepository.findByRole(role);
 		return emp.stream().map(this:: mapToEmpRoleDto).toList();

@@ -47,6 +47,11 @@ public class ShiftServiceImpl implements ShiftService{
 		if(dto.getEndsAt()!= null) {
 			updatedShift.setEndsAt(dto.getEndsAt());
 		}
+		if(dto.getManagerId()!= null) {
+			Employee emp = empRepo.findById(dto.getManagerId())
+					.orElseThrow(()-> new RuntimeException("Manager not found"));
+			updatedShift.setManager(emp);
+		}
 		
 		repo.save(updatedShift);
 		
