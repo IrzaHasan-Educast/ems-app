@@ -15,9 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Configuration
 @RequiredArgsConstructor
@@ -54,7 +52,7 @@ public class SecurityConfig {
                 // .requestMatchers("/actuator/health").permitAll()
 
                 // Role protected routes
-                .requestMatchers("/api/v1/users/me").hasAnyRole("ADMIN", "HR")
+                .requestMatchers("/api/v1/users/me").hasAnyRole("ADMIN", "HR", "EMPLOYEE", "MANAGER")
                 .requestMatchers("/api/v1/employees/**").hasAnyRole("ADMIN", "HR")
 
                 .requestMatchers("/api/v1/employee-shifts/**").hasAnyRole("ADMIN","HR")

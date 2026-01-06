@@ -58,4 +58,7 @@ public class CustomUserDetails implements UserDetails {
     public String getRole() {
     	return user.getEmployee().getRole();
     }
+    public String getDesignation() {
+    	return user.getEmployee().getDesignation();
+    }
 }

@@ -36,12 +36,13 @@ public class UserController {
     }
     
     @GetMapping("/me")
-    @PreAuthorize("hasAnyRole('ADMIN','HR')")
+    @PreAuthorize("hasAnyRole('ADMIN','HR', 'MANAGER', 'EMPLOYEE')")
     public ResponseEntity<Map<String, Object>> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Map<String, Object> resp = new HashMap<>();
         resp.put("employeeId", userDetails.getEmployeeId());
         resp.put("fullName", userDetails.getFullName());
         resp.put("role", userDetails.getRole());
+        resp.put("designation", userDetails.getDesignation());
         return ResponseEntity.ok(resp);
     }
 

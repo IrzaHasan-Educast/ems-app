@@ -53,6 +53,7 @@ public class EmployeeShiftController {
     // Delete assigned shift
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAssignedShift(@PathVariable Long id) {
+    	System.out.println("delete called");
         employeeShiftService.deleteAssignedShift(id);
         return ResponseEntity.ok("Assigned shift deleted successfully");
     }
