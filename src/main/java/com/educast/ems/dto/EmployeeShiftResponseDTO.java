@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class EmployeeShiftResponseDTO {
+	Long id;
 	private Long empId;
 	private String empName;
 	private Long shiftId;

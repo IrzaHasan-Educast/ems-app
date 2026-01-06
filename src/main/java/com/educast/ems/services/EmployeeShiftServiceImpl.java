@@ -78,13 +78,13 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
         employeeShiftRepo.save(employeeShift);
     }
 
-	@Override
-	public EmployeeShiftResponseDTO getEmployeeShiftsByEmpId(Long id) {
-		EmployeeShift empShift =  employeeShiftRepo.findByEmployeeId(id)
-				.orElseThrow(()-> new RuntimeException("Shift not found with employee id"));
-		
-		return this.mapToDto(empShift);
-	}
+    @Override
+    public EmployeeShiftResponseDTO getEmployeeShiftsByEmpId(Long id) {
+        return employeeShiftRepo.findByEmployeeId(id)
+                .map(this::mapToDto)
+                .orElse(null); // return null if no shift assigned
+    }
+
 
 	@Override
 	public List<EmployeeShiftResponseDTO> getEmployeeShiftsByShiftId(Long id) {
@@ -101,6 +101,7 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
 
 	private EmployeeShiftResponseDTO mapToDto(EmployeeShift empShift){
 		EmployeeShiftResponseDTO dto = new EmployeeShiftResponseDTO();
+		dto.setId(empShift.getId());
 		dto.setEmpId(empShift.getEmployee().getId());
 		dto.setEmpName(empShift.getEmployee().getFullName());
 		dto.setShiftId(empShift.getShift().getId());
