@@ -10,7 +10,6 @@ import com.educast.ems.dto.EmployeeResByRoleDTO;
 import com.educast.ems.dto.EmployeeResponse;
 import com.educast.ems.dto.WorkSessionResponseDTO;
 import com.educast.ems.exception.DuplicateResourceException;
-import com.educast.ems.exception.DuplicateResourceException;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

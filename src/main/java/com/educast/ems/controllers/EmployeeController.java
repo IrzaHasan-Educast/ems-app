@@ -3,7 +3,6 @@ package com.educast.ems.controllers;
 import com.educast.ems.dto.EmployeeRequest;
 import com.educast.ems.dto.EmployeeResByRoleDTO;
 import com.educast.ems.dto.EmployeeResponse;
-import com.educast.ems.models.Employee;
 import com.educast.ems.services.EmployeeService;
 
 import lombok.RequiredArgsConstructor;

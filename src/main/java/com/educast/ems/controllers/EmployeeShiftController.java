@@ -31,8 +31,6 @@ public class EmployeeShiftController {
     // Assign shift to employee
 	@PostMapping("/assign")
 	public ResponseEntity<String> assignShift(@RequestBody EmployeeShiftRequestDTO dto) {
-		System.out.println("Assign calls");
-        System.out.println(dto.getEmployeeId()+ " "+ dto.getShiftId());
 	    if (dto.getEmployeeId() == null || dto.getShiftId() == null) {
 	        return ResponseEntity.badRequest().body("Employee ID and Shift ID cannot be null");
 	    }
@@ -44,8 +42,6 @@ public class EmployeeShiftController {
     // Update assigned shift
     @PutMapping("/update")
     public ResponseEntity<String> updateAssignedShift(@RequestBody EmployeeShiftRequestDTO dto) {
-    	System.out.println("update calls");
-        System.out.println(dto.getId()+" "+dto.getEmployeeId()+ " "+ dto.getShiftId());
         employeeShiftService.updateAssignedShift(dto);
         return ResponseEntity.ok("Assigned shift updated successfully");
     }
@@ -53,7 +49,6 @@ public class EmployeeShiftController {
     // Delete assigned shift
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAssignedShift(@PathVariable Long id) {
-    	System.out.println("delete called");
         employeeShiftService.deleteAssignedShift(id);
         return ResponseEntity.ok("Assigned shift deleted successfully");
     }
@@ -62,7 +57,6 @@ public class EmployeeShiftController {
     public ResponseEntity<EmployeeShiftResponseDTO> getEmployeeShiftByEmployeeId(@PathVariable Long empId) {
         EmployeeShiftResponseDTO dto = employeeShiftService.getEmployeeShiftsByEmpId(empId);
         if (dto == null) {
-        	System.out.println(dto == null);
             return ResponseEntity.ok().body(null); // or ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(dto);
