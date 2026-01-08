@@ -11,12 +11,14 @@ import com.educast.ems.models.Shifts;
 import com.educast.ems.repositories.EmployeeRepository;
 import com.educast.ems.repositories.ShiftsRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ShiftServiceImpl implements ShiftService{
 	private final ShiftsRepository repo;
+	private final EmployeeShiftService employeeShiftService;
 	private final EmployeeRepository empRepo;
 	
 
@@ -57,13 +59,21 @@ public class ShiftServiceImpl implements ShiftService{
 		
 	}
 
+	@Transactional
 	@Override
 	public void deleteShift(Long shiftId) {
-		Shifts deletedShift = repo.findById(shiftId)
-				.orElseThrow(()-> new RuntimeException("Id not found"));
-		repo.delete(deletedShift);
-		
+	    System.out.println("start deleting");
+
+	    employeeShiftService.deleteEmpShiftByShiftId(shiftId);
+
+	    Shifts deletedShift = repo.findById(shiftId)
+	            .orElseThrow(() -> new RuntimeException("Id not found"));
+
+	    repo.delete(deletedShift);
+
+	    System.out.println("Deletion ended");
 	}
+
 
 	@Override
 	public List<ShiftResponseDTO> getAllShifts() {

@@ -14,6 +14,7 @@ import com.educast.ems.repositories.EmployeeRepository;
 import com.educast.ems.repositories.EmployeeShiftRepository;
 import com.educast.ems.repositories.ShiftsRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -64,6 +65,19 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
 
         employeeShiftRepo.delete(employeeShift);
     }
+    
+    @Transactional
+    public boolean deleteEmpShiftByShiftId(Long shiftId) {
+        try {
+            employeeShiftRepo.deleteAllByShiftId(shiftId);
+            System.out.println("employees deleted");
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace(); // IMPORTANT for debugging
+            return false;
+        }
+    }
+
 
     @Override
     public void updateAssignedShift(EmployeeShiftRequestDTO dto) {
