@@ -32,7 +32,7 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','HR')")
     public UserResponse updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest request) {
-        return userService.updateUser(id, request.getUsername(), request.getPassword());
+        return userService.updateUser(id, request.getUsername(), request.getPassword(), request.getRole());
     }
     
     @GetMapping("/me")

@@ -3,6 +3,7 @@ package com.educast.ems.controllers;
 import com.educast.ems.dto.EmployeeRequest;
 import com.educast.ems.dto.EmployeeResByRoleDTO;
 import com.educast.ems.dto.EmployeeResponse;
+import com.educast.ems.models.Employee;
 import com.educast.ems.services.EmployeeService;
 
 import lombok.RequiredArgsConstructor;
@@ -71,6 +72,11 @@ public class EmployeeController {
         return ResponseEntity.ok(managers);
     }
     
+    @GetMapping("manager/employees")
+    public List<Employee> findAllEmployeesForManager(Long managerId){
+    	return employeeService.findAllEmployeesForManager(managerId);
+    }
+
 
 
 }

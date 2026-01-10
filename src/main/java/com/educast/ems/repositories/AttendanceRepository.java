@@ -22,7 +22,32 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long>{
 
     // Get all absent employees between joining and leaving (or current) date
     @Query("SELECT e FROM Employee e WHERE e.id NOT IN " +
-           "(SELECT a.employee.id FROM Attendance a WHERE a.attendanceDate BETWEEN e.joiningDate AND :endDate)")
+           "(SELECT a.employee.id FROM Attendance a WHERE a.attendanceDate BETWEEN e.joiningDate AND :endDate ORDER BY a.attendanceDate DESC, a.attendanceTime DESC)")
     List<Employee> findEmployeesAbsentBetween(LocalDate endDate);
+    
+    
+
+    @Query("""
+        SELECT a
+        FROM Attendance a
+        JOIN EmployeeShift es ON es.employee.id = a.employee.id
+        JOIN es.shift s
+        WHERE s.manager.id = :managerId
+        AND a.attendanceDate = :date
+    """)
+    List<Attendance> findManagerShiftAttendance(
+            Long managerId,
+            LocalDate date
+    );
+    
+    @Query("""
+            SELECT a
+            FROM Attendance a
+            JOIN EmployeeShift es ON es.employee.id = a.employee.id
+            JOIN es.shift s
+            WHERE s.manager.id = :managerId
+            ORDER BY a.attendanceDate DESC, a.attendanceTime DESC
+        """)
+        List<Attendance> findAttendanceHistoryForManager(Long managerId);
 
 }

@@ -79,6 +79,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         List<Attendance> attendances = attendanceRepository.findAll();
         return attendances.stream().map(this::mapToDto).collect(Collectors.toList());
     }
+    
 
     @Override
     public List<AttendanceResponseDTO> getAttendanceByEmpId(Long employeeId) {
@@ -133,4 +134,16 @@ public class AttendanceServiceImpl implements AttendanceService {
         dto.setShift(attendance.getShift());
         return dto;
     }
+    
+    @Override
+    public List<AttendanceResponseDTO> getManagerAttendanceHistory(Long managerId) {
+
+        List<Attendance> list =
+                attendanceRepository.findAttendanceHistoryForManager(managerId);
+
+        return list.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
 }

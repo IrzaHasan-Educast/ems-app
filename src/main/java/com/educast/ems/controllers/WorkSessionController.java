@@ -41,7 +41,14 @@ public class WorkSessionController {
          return ResponseEntity.ok(session);
      }
 
+     @GetMapping("/manager/history")
+     public List<WorkSessionResponseDTO> getManagerWorkSessions(
+             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
+         Long managerId = userDetails.getEmployeeId();
+         return workSessionService.getAllSessionsForManager(managerId);
+     }
+     
      // Clock Out
      @PutMapping("/clock-out/{id}")
      public ResponseEntity<WorkSessionResponseDTO> clockOut(@PathVariable Long id) {
@@ -68,7 +75,7 @@ public class WorkSessionController {
          }
          return ResponseEntity.ok(sessions);
      }
-
+     
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
@@ -101,7 +108,4 @@ public class WorkSessionController {
     public List<WorkSessionResponseDTO> getLatestSessions(@PathVariable Long id) {
         return workSessionService.getLatest3SessionsByEmployee(id);
     }
-
-
-
 }

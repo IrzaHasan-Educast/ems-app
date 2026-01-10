@@ -235,6 +235,16 @@ public class WorkSessionServiceImpl implements WorkSessionService {
         return dto;
     }
     
+    @Override
+    public List<WorkSessionResponseDTO> getAllSessionsForManager(Long managerId) {
+
+        return workSessionRepository.findAllForManager(managerId)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
+    
 //    @Override
 //    public WorkSessionResponseDTO syncSessionHours(
 //            Long sessionId,

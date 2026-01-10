@@ -18,10 +18,6 @@ public class AttendanceController {
     @Autowired
     private AttendanceService attendanceService;
     
-//    @GetMapping
-//    public void testApi() {
-//    	System.out.println("Hello World");
-//    }
 
     // Mark attendance for an employee
     @PostMapping("/mark")
@@ -43,15 +39,24 @@ public class AttendanceController {
         return attendanceService.getAttendanceByEmpId(id);
     }
 
- // New API: get absent today
+ // New API: get absent today 
     @GetMapping("/absent/today")
     public List<AttendanceResponseDTO> getAbsentToday() {
         return attendanceService.getAbsentToday();
     }
 
     // New API: get absent history (inactive or from joining date)
-    @GetMapping("/absent/history")
-    public List<AttendanceResponseDTO> getAbsentHistory() {
-        return attendanceService.getAbsentEmployeesHistory();
+//    @GetMapping("/absent/history")
+//    public List<AttendanceResponseDTO> getAbsentHistory() {
+//        return attendanceService.getAbsentEmployeesHistory();
+//    }
+    
+    @GetMapping("/manager/history")
+    public List<AttendanceResponseDTO> getManagerAttendanceHistory(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long managerId = userDetails.getEmployeeId();
+        return attendanceService.getManagerAttendanceHistory(managerId);
     }
+
 }

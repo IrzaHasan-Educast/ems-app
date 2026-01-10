@@ -1,6 +1,7 @@
 package com.educast.ems.services;
 
 import com.educast.ems.dto.UserResponse;
+import com.educast.ems.models.Role;
 import com.educast.ems.models.User;
 import com.educast.ems.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserResponse updateUser(Long id, String newUsername, String newPassword) {
+    public UserResponse updateUser(Long id, String newUsername, String newPassword, Role newRole) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
 
@@ -33,6 +34,10 @@ public class UserServiceImpl implements UserService {
                 throw new IllegalArgumentException("Password must be at least 6 characters");
             }
             user.setPasswordHash(passwordEncoder.encode(newPassword));
+        }
+        
+        if(newRole != null) {
+        	user.setRole(newRole);
         }
 
         User saved = userRepository.save(user);

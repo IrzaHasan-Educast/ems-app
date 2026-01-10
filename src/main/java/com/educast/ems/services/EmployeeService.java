@@ -16,5 +16,6 @@ public interface EmployeeService {
     void deleteEmployee(Long id);
     EmployeeResponse toggleActive(Long id);
 	List<EmployeeResByRoleDTO> findByRole(String role);
+	List<Employee> findAllEmployeesForManager(Long managerId);
 
 }

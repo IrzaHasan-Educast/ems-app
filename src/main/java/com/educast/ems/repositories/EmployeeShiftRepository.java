@@ -20,5 +20,6 @@ public interface EmployeeShiftRepository extends JpaRepository<EmployeeShift, Lo
     @Transactional
     @Query("DELETE FROM EmployeeShift es WHERE es.shift.id = :shiftId")
     void deleteAllByShiftId(@Param("shiftId") Long shiftId);    
-
+    
+    Optional<List<EmployeeShift>> findAllByShiftId(Long shiftId);
 }

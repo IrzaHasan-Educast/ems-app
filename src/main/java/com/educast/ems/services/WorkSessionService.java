@@ -22,4 +22,6 @@ public interface WorkSessionService {
     Long employeeId, String status, Integer month, String searchTerm, int page, int size);
 //    WorkSessionResponseDTO syncSessionHours(Long sessionId, WorkSessionHoursSyncDTO dto);
     public List<WorkSessionResponseDTO> getLatest3SessionsByEmployee(Long employeeId);
+    List<WorkSessionResponseDTO> getAllSessionsForManager(Long managerId);
+
 }

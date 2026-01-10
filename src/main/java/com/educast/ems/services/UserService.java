@@ -2,11 +2,12 @@ package com.educast.ems.services;
 
 
 import com.educast.ems.dto.UserResponse;
+import com.educast.ems.models.Role;
 import com.educast.ems.models.User;
 
 public interface UserService {
     UserResponse getUserByEmployeeId(Long employeeId);
-    UserResponse updateUser(Long userId, String username, String password);
+    UserResponse updateUser(Long userId, String username, String password, Role role);
     User findByUsername(String username);
 
 }

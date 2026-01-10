@@ -12,4 +12,6 @@ public interface AttendanceService {
 	List<AttendanceResponseDTO> getAttendanceByEmpId(Long employeeId);
 	List<AttendanceResponseDTO> getAbsentToday();
 	List<AttendanceResponseDTO> getAbsentEmployeesHistory();
+	List<AttendanceResponseDTO> getManagerAttendanceHistory(Long managerId);
+
 }

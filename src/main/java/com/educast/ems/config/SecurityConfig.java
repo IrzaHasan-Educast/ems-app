@@ -53,17 +53,24 @@ public class SecurityConfig {
 
                 // Role protected routes
                 .requestMatchers("/api/v1/users/me").hasAnyRole("ADMIN", "HR", "EMPLOYEE", "MANAGER")
+                .requestMatchers("/api/v1/employees/manager/employees").hasRole("MANAGER")
                 .requestMatchers("/api/v1/employees/**").hasAnyRole("ADMIN", "HR")
-
+                
                 .requestMatchers("/api/v1/employee-shifts/**").hasAnyRole("ADMIN","HR")
                 .requestMatchers("/api/v1/shifts/**").hasAnyRole("ADMIN","HR")
                 
-                .requestMatchers("/api/v1/work-sessions/**").hasRole("EMPLOYEE")
+                .requestMatchers("/api/v1/work-sessions/manager/**").hasRole("MANAGER")
+                .requestMatchers("/api/v1/work-sessions/**").hasAnyRole("EMPLOYEE", "MANAGER")
                 .requestMatchers("/api/v1/admin/work-sessions/**").hasAnyRole("ADMIN", "HR")
 
-                .requestMatchers("/api/v1/attendance/my/**").hasRole("EMPLOYEE")
+                .requestMatchers("/api/v1/attendance/my/**").hasAnyRole("EMPLOYEE", "MANAGER")
                 .requestMatchers("/api/v1/attendance/all/**").hasAnyRole("ADMIN", "HR")
-                .requestMatchers("/api/v1/attendance/mark/**").hasRole("EMPLOYEE")
+                .requestMatchers("/api/v1/attendance/mark/**").hasAnyRole("EMPLOYEE","MANAGER")
+                .requestMatchers("/api/v1/attendance/manager/**").hasRole("MANAGER")
+                .requestMatchers("/api/v1/attendance/absent/today").hasAnyRole("HR","ADMIN")
+//                .requestMatchers("/api/v1/attendance/absent/history").hasAnyRole("HR","ADMIN","MANAGER")
+                
+                
 
                 .requestMatchers("/api/v1/leaves").hasRole("EMPLOYEE")
                 .requestMatchers("/api/v1/leaves/admin").hasAnyRole("ADMIN", "HR")

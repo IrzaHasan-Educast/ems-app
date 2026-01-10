@@ -69,5 +69,15 @@ public interface WorkSessionRepository extends JpaRepository<WorkSession, Long> 
     List<WorkSession> findByClockOutIsNullAndClockInAfter(LocalDateTime windowStart);
     List<WorkSession> findTop3ByEmployeeIdOrderByClockInDesc(Long employeeId);
 
-
+    @Query("""
+            SELECT DISTINCT ws
+            FROM WorkSession ws
+            JOIN FETCH ws.employee e
+            LEFT JOIN FETCH ws.breaks b
+            JOIN EmployeeShift es ON es.employee.id = e.id
+            JOIN es.shift s
+            WHERE s.manager.id = :managerId
+            ORDER BY ws.clockIn DESC
+        """)
+        List<WorkSession> findAllForManager(@Param("managerId") Long managerId);
 }
