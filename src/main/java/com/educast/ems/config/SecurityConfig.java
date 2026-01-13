@@ -56,6 +56,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/employees/manager/employees").hasRole("MANAGER")
                 .requestMatchers("/api/v1/employees/**").hasAnyRole("ADMIN", "HR")
                 
+                .requestMatchers("/api/v1/employee-shifts/shift/employee-count/**").hasRole("MANAGER")
+                .requestMatchers("/api/v1/employee-shifts/employees/**").hasRole("MANAGER")
                 .requestMatchers("/api/v1/employee-shifts/**").hasAnyRole("ADMIN","HR")
                 .requestMatchers("/api/v1/shifts/**").hasAnyRole("ADMIN","HR")
                 
@@ -67,15 +69,15 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/attendance/all/**").hasAnyRole("ADMIN", "HR")
                 .requestMatchers("/api/v1/attendance/mark/**").hasAnyRole("EMPLOYEE","MANAGER")
                 .requestMatchers("/api/v1/attendance/manager/**").hasRole("MANAGER")
-                .requestMatchers("/api/v1/attendance/absent/today").hasAnyRole("HR","ADMIN")
+                .requestMatchers("/api/v1/attendance/absent/today").hasAnyRole("HR","ADMIN", "MANAGER")
 //                .requestMatchers("/api/v1/attendance/absent/history").hasAnyRole("HR","ADMIN","MANAGER")
                 
                 
 
-                .requestMatchers("/api/v1/leaves").hasRole("EMPLOYEE")
+                .requestMatchers("/api/v1/leaves").hasAnyRole("EMPLOYEE", "MANAGER")
                 .requestMatchers("/api/v1/leaves/admin").hasAnyRole("ADMIN", "HR")
-                .requestMatchers("/api/v1/leaves/employee/**").hasRole("EMPLOYEE")
-                .requestMatchers("/api/v1/leaves/types").hasAnyRole("EMPLOYEE", "ADMIN", "HR")
+                .requestMatchers("/api/v1/leaves/employee/**").hasAnyRole("EMPLOYEE", "MANAGER")
+                .requestMatchers("/api/v1/leaves/types").hasAnyRole("EMPLOYEE", "ADMIN", "HR", "MANAGER")
                 .requestMatchers("/api/v1/leaves/**").hasAnyRole("ADMIN", "HR")
 
                 .anyRequest().authenticated()

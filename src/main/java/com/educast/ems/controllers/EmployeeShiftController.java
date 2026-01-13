@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.educast.ems.dto.EmployeeShiftRequestDTO;
 import com.educast.ems.dto.EmployeeShiftResponseDTO;
+import com.educast.ems.security.CustomUserDetails;
 import com.educast.ems.services.EmployeeShiftService;
 
 import lombok.RequiredArgsConstructor;
@@ -53,6 +55,7 @@ public class EmployeeShiftController {
         return ResponseEntity.ok("Assigned shift deleted successfully");
     }
     
+//    admin can get employee assign to any shift by employee id
     @GetMapping("/employeeId/{empId}")
     public ResponseEntity<EmployeeShiftResponseDTO> getEmployeeShiftByEmployeeId(@PathVariable Long empId) {
         EmployeeShiftResponseDTO dto = employeeShiftService.getEmployeeShiftsByEmpId(empId);
@@ -63,16 +66,28 @@ public class EmployeeShiftController {
     }
 
     
-    
+//    Admin can get list of employee by shift id
     @GetMapping("/shiftId/{shiftId}")
-    public EmployeeShiftResponseDTO getEmployeeShiftByShiftId(@PathVariable Long shiftId) {
-    	return employeeShiftService.getEmployeeShiftsByEmpId(shiftId);
+    public List<EmployeeShiftResponseDTO> getEmployeeShiftByShiftId(@PathVariable Long shiftId) {
+    	return employeeShiftService.getEmployeeShiftsByShiftId(shiftId);
     }
     
+//    admin can get list of employees who are assigned to any shift
     @GetMapping
     public List<EmployeeShiftResponseDTO> getAllEmployeeShifts() {
     	return employeeShiftService.getAllEmployeeShifts();
     }
     
+//    manager can get no. of employee under specific manager
+    @GetMapping("/shift/employee-count")
+    public int getCountofTotalEmployeesbyManagerId(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    	Long managerId = userDetails.getEmployeeId();
+    	return employeeShiftService.getCountofTotalEmployeesbyManagerId(managerId);
+    }
+    
+    @GetMapping("employees")
+    public List<EmployeeShiftResponseDTO> listOfEmpByManagerId(@AuthenticationPrincipal CustomUserDetails userDetails){
+    	Long managerId = userDetails.getEmployeeId();
+    	return employeeShiftService.listOfEmpByManagerId(managerId);
+    }
 }
-

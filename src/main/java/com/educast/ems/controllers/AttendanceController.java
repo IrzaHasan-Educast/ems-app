@@ -46,11 +46,12 @@ public class AttendanceController {
     }
 
     // New API: get absent history (inactive or from joining date)
-//    @GetMapping("/absent/history")
-//    public List<AttendanceResponseDTO> getAbsentHistory() {
-//        return attendanceService.getAbsentEmployeesHistory();
-//    }
+    @GetMapping("/absent/history")
+    public List<AttendanceResponseDTO> getAbsentHistory() {
+        return attendanceService.getAbsentEmployeesHistory();
+    }
     
+    // for manager to view employees attendance under their shifts
     @GetMapping("/manager/history")
     public List<AttendanceResponseDTO> getManagerAttendanceHistory(
             @AuthenticationPrincipal CustomUserDetails userDetails) {

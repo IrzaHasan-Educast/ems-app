@@ -100,6 +100,7 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
     }
 
 
+    
 	@Override
 	public List<EmployeeShiftResponseDTO> getEmployeeShiftsByShiftId(Long id) {
 		List<EmployeeShift> empShifts =  employeeShiftRepo.findByShiftId(id);
@@ -122,5 +123,21 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
 		dto.setShiftName(empShift.getShift().getShiftName());
 		
 		return dto;
+	}
+
+	@Override
+	public int getCountofTotalEmployeesbyManagerId(Long managerId) {
+		return employeeShiftRepo.findEmployeesCountByShiftManagerId(managerId);
+	}
+
+	@Override
+	public List<EmployeeShiftResponseDTO> listOfEmpByManagerId(Long id) {
+		List<EmployeeShift> listOfEmp  = employeeShiftRepo.findEmployeesByManagerId(id);
+		if(!listOfEmp.isEmpty()) {
+			return listOfEmp.stream()
+			        .map(this::mapToDto)
+			        .collect(Collectors.toList());
+		}
+		return null;
 	}
 }

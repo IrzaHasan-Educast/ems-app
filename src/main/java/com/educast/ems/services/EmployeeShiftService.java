@@ -14,4 +14,7 @@ public interface EmployeeShiftService {
 	public List<EmployeeShiftResponseDTO>  getEmployeeShiftsByShiftId(Long id);
 	public boolean deleteEmpShiftByShiftId(Long shiftId);
 
+	List<EmployeeShiftResponseDTO> listOfEmpByManagerId(Long id);
+	
+	int getCountofTotalEmployeesbyManagerId(Long shiftId);
 }
