@@ -49,5 +49,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long>{
             ORDER BY a.attendanceDate DESC, a.attendanceTime DESC
         """)
         List<Attendance> findAttendanceHistoryForManager(Long managerId);
-
+   
 }
+

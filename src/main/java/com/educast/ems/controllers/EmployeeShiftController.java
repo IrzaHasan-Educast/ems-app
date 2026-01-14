@@ -85,6 +85,7 @@ public class EmployeeShiftController {
     	return employeeShiftService.getCountofTotalEmployeesbyManagerId(managerId);
     }
     
+//    manager can get list of employees under their shift
     @GetMapping("employees")
     public List<EmployeeShiftResponseDTO> listOfEmpByManagerId(@AuthenticationPrincipal CustomUserDetails userDetails){
     	Long managerId = userDetails.getEmployeeId();
