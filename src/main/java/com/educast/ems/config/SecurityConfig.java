@@ -59,6 +59,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/employee-shifts/shift/employee-count/**").hasRole("MANAGER")
                 .requestMatchers("/api/v1/employee-shifts/employees/**").hasRole("MANAGER")
                 .requestMatchers("/api/v1/employee-shifts/**").hasAnyRole("ADMIN","HR")
+                .requestMatchers("/api/v1/shifts/my/**").hasRole("MANAGER")
                 .requestMatchers("/api/v1/shifts/**").hasAnyRole("ADMIN","HR")
                 
                 .requestMatchers("/api/v1/work-sessions/manager/**").hasRole("MANAGER")

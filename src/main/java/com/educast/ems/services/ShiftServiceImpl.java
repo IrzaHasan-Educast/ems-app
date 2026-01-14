@@ -89,6 +89,13 @@ public class ShiftServiceImpl implements ShiftService{
 		return mapToDto(shift);
 	}
 	
+	@Override
+	public ShiftResponseDTO getShiftByManagerId(Long managerId) {
+		Shifts shift = repo.findByManagerId(managerId);
+			return mapToDto(shift);
+		
+	}
+	
 	private ShiftResponseDTO mapToDto(Shifts shift){
 		ShiftResponseDTO dto = new ShiftResponseDTO();
 		dto.setId(shift.getId());

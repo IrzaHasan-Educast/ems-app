@@ -66,6 +66,7 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
         employeeShiftRepo.delete(employeeShift);
     }
     
+    @Override
     @Transactional
     public boolean deleteEmpShiftByShiftId(Long shiftId) {
         try {

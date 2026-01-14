@@ -13,5 +13,6 @@ public interface ShiftService {
 	ShiftResponseDTO getShiftById(Long id);
 	
 	List<ShiftResponseDTO> getAllShifts();
+	ShiftResponseDTO getShiftByManagerId(Long managerId);
 	
 }

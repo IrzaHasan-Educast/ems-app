@@ -3,6 +3,7 @@ package com.educast.ems.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.educast.ems.dto.ShiftRequestDTO;
 import com.educast.ems.dto.ShiftResponseDTO;
+import com.educast.ems.security.CustomUserDetails;
 import com.educast.ems.services.ShiftService;
 
 import lombok.RequiredArgsConstructor;
+
 
 @RestController
 @RequestMapping("/api/v1/shifts")
@@ -57,4 +60,13 @@ public class ShiftController {
     public ResponseEntity<List<ShiftResponseDTO>> getAllShifts() {
         return ResponseEntity.ok(shiftService.getAllShifts());
     }
+    
+//    manager can get their shift details
+    @GetMapping("/my")
+    public ShiftResponseDTO getMethodName(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    	Long managerId = userDetails.getEmployeeId();
+        return shiftService.getShiftByManagerId(managerId);
+        
+    }
+    
 }
