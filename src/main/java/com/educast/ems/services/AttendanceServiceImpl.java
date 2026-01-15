@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.educast.ems.dto.AttendanceResponseDTO;
+import com.educast.ems.dto.EmployeeShiftResponseDTO;
 import com.educast.ems.models.Attendance;
 import com.educast.ems.models.Employee;
+import com.educast.ems.models.EmployeeShift;
 import com.educast.ems.models.Shift;
 import com.educast.ems.repositories.AttendanceRepository;
 import com.educast.ems.repositories.EmployeeRepository;
@@ -26,6 +28,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private EmployeeShiftService empShiftService;
+    
     @Override
     public void createAttendance(Long id) {
         Employee emp = employeeRepository.findById(id)
@@ -132,6 +137,10 @@ public class AttendanceServiceImpl implements AttendanceService {
         dto.setAttendanceTime(attendance.getAttendanceTime());
         dto.setPresent(attendance.isPresent());
         dto.setShift(attendance.getShift());
+        if(this.getShiftByEmpId(attendance.getEmployee().getId())!= null) {
+        System.out.println(this.getShiftByEmpId(attendance.getEmployee().getId()).getShiftName());
+        dto.setAssignedShift(this.getShiftByEmpId(attendance.getEmployee().getId()).getShiftName());}
+        
         return dto;
     }
     
@@ -144,6 +153,11 @@ public class AttendanceServiceImpl implements AttendanceService {
         return list.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
+    }
+    
+    private EmployeeShiftResponseDTO getShiftByEmpId(Long empId) {
+    	return empShiftService.getEmployeeShiftsByEmpId(empId);
+    	
     }
 
 }

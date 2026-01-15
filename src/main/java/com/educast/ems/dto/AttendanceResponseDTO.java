@@ -16,7 +16,6 @@ public class AttendanceResponseDTO {
 	private LocalTime attendanceTime;
 	private LocalDate attendanceDate;
 	private Shift shift;
-	
-	
+	private String assignedShift;
 
 }

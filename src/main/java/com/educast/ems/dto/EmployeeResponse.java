@@ -15,6 +15,6 @@ public class EmployeeResponse {
     private String role;
     private LocalDate joiningDate;
     private boolean active;
-
+    private String assignedShift;
     private String username; // linked user username
 }

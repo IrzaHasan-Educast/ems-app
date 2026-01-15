@@ -8,6 +8,7 @@ import com.educast.ems.repositories.UserRepository;
 import com.educast.ems.dto.EmployeeRequest;
 import com.educast.ems.dto.EmployeeResByRoleDTO;
 import com.educast.ems.dto.EmployeeResponse;
+import com.educast.ems.dto.EmployeeShiftResponseDTO;
 import com.educast.ems.dto.WorkSessionResponseDTO;
 import com.educast.ems.exception.DuplicateResourceException;
 
@@ -172,7 +173,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         dto.setRole(emp.getRole());
         dto.setJoiningDate(emp.getJoiningDate());
         dto.setActive(emp.isActive());
-
+        EmployeeShiftResponseDTO empAssignedShift = this.getShiftByEmpId(emp.getId());
+    	if(empAssignedShift != null) {
+    		System.out.println(empAssignedShift.getShiftName());
+    		dto.setAssignedShift(empAssignedShift.getShiftName());
+    	}
         // If you have a linked user, you can set username here
         // dto.setUsername(emp.getUser() != null ? emp.getUser().getUsername() : null);
 
@@ -190,6 +195,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     	dto.setId(emp.getId());
     	dto.setFullName(emp.getFullName());
     	dto.setRole(emp.getRole());
+
     	return dto;
     }
     
@@ -203,5 +209,10 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .orElse("");
         }
         return "";
+    }
+    
+    private EmployeeShiftResponseDTO getShiftByEmpId(Long empId) {
+    	return employeeShiftService.getEmployeeShiftsByEmpId(empId);
+    	
     }
 }
