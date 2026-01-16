@@ -14,7 +14,6 @@ import com.educast.ems.dto.AttendanceResponseDTO;
 import com.educast.ems.dto.EmployeeShiftResponseDTO;
 import com.educast.ems.models.Attendance;
 import com.educast.ems.models.Employee;
-import com.educast.ems.models.EmployeeShift;
 import com.educast.ems.models.Shift;
 import com.educast.ems.repositories.AttendanceRepository;
 import com.educast.ems.repositories.EmployeeRepository;
@@ -138,7 +137,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         dto.setPresent(attendance.isPresent());
         dto.setShift(attendance.getShift());
         if(this.getShiftByEmpId(attendance.getEmployee().getId())!= null) {
-        System.out.println(this.getShiftByEmpId(attendance.getEmployee().getId()).getShiftName());
+//        System.out.println(this.getShiftByEmpId(attendance.getEmployee().getId()).getShiftName());
         dto.setAssignedShift(this.getShiftByEmpId(attendance.getEmployee().getId()).getShiftName());}
         
         return dto;

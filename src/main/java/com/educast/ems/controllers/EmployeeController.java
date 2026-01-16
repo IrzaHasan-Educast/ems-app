@@ -58,7 +58,7 @@ public class EmployeeController {
 //        employeeService.deleteEmployee(id);
 //    }
     
- // ✅ Toggle active/inactive
+ // Toggle active/inactive
     @PutMapping("/toggle-active/{id}")
     public ResponseEntity<String> toggleActive(@PathVariable Long id) {
         EmployeeResponse employee = employeeService.toggleActive(id);

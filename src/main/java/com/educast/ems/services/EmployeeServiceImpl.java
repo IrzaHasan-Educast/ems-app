@@ -70,7 +70,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	        throw new DuplicateResourceException("Username already exists");
 	    }
 	
-	    // ✅ email check (THIS WAS MISSING)
+	    // email check (THIS WAS MISSING)
 	    if (employeeRepository.existsByEmail(employee.getEmail())) {
 	        throw new DuplicateResourceException("Email already exists");
 	    }
@@ -141,11 +141,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         boolean isSessionActive =checkOngoingActivities(id);
-        if(isSessionActive) {
-        	System.out.println("Session was active");
-        }else {
-        	System.out.println("Not Activi");
-        }
+//        if(isSessionActive) {
+//        	System.out.println("Session was active");
+//        }else {
+//        	System.out.println("Not Activi");
+//        }
         employee.setActive(!employee.isActive());
         Employee emp = employeeRepository.save(employee);
         return mapToDto(emp);
@@ -175,12 +175,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         dto.setActive(emp.isActive());
         EmployeeShiftResponseDTO empAssignedShift = this.getShiftByEmpId(emp.getId());
     	if(empAssignedShift != null) {
-    		System.out.println(empAssignedShift.getShiftName());
+//    		System.out.println(empAssignedShift.getShiftName());
     		dto.setAssignedShift(empAssignedShift.getShiftName());
     	}
-        // If you have a linked user, you can set username here
-        // dto.setUsername(emp.getUser() != null ? emp.getUser().getUsername() : null);
-
+        
         return dto;
     }
     
@@ -200,7 +198,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
     
     private String getCurrentUserRole() {
-        // If using Spring Security with JWT
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getAuthorities() != null) {
             return authentication.getAuthorities().stream()

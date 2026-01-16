@@ -39,13 +39,13 @@ public class AttendanceController {
         return attendanceService.getAttendanceByEmpId(id);
     }
 
- // New API: get absent today 
+ //  get absent today 
     @GetMapping("/absent/today")
     public List<AttendanceResponseDTO> getAbsentToday() {
         return attendanceService.getAbsentToday();
     }
 
-    // New API: get absent history (inactive or from joining date)
+    // get absent history (inactive or from joining date)
     @GetMapping("/absent/history")
     public List<AttendanceResponseDTO> getAbsentHistory() {
         return attendanceService.getAbsentEmployeesHistory();

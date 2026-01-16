@@ -62,7 +62,7 @@ public class ShiftServiceImpl implements ShiftService{
 	@Transactional
 	@Override
 	public void deleteShift(Long shiftId) {
-	    System.out.println("start deleting");
+//	    System.out.println("start deleting");
 
 	    employeeShiftService.deleteEmpShiftByShiftId(shiftId);
 
@@ -71,7 +71,7 @@ public class ShiftServiceImpl implements ShiftService{
 
 	    repo.delete(deletedShift);
 
-	    System.out.println("Deletion ended");
+//	    System.out.println("Deletion ended");
 	}
 
 
@@ -99,9 +99,9 @@ public class ShiftServiceImpl implements ShiftService{
 	private ShiftResponseDTO mapToDto(Shifts shift){
 		ShiftResponseDTO dto = new ShiftResponseDTO();
 		dto.setId(shift.getId());
-		System.out.println(shift.getShiftName());
-		System.out.println(shift.getStartsAt());
-		System.out.println(shift.getEndsAt());
+//		System.out.println(shift.getShiftName());
+//		System.out.println(shift.getStartsAt());
+//		System.out.println(shift.getEndsAt());
 		dto.setShiftName(shift.getShiftName());
 		dto.setStartsAt(shift.getStartsAt());
 		dto.setEndsAt(shift.getEndsAt());
