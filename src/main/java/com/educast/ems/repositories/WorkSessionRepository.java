@@ -52,6 +52,7 @@ public interface WorkSessionRepository extends JpaRepository<WorkSession, Long> 
     @Query("""
     		SELECT new com.educast.ems.dto.WorkSessionTableDTO(
     		    ws.id,
+    		    e.id,
     		    e.fullName,
     		    ws.clockIn,
     		    ws.clockOut,

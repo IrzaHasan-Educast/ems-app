@@ -124,6 +124,15 @@ public class WorkSessionServiceImpl implements WorkSessionService {
                 .map(this::mapToDTO2)
                 .toList();
     }
+    
+//    @Override
+//    public List<WorkSessionResponseDTO> getAllSessions() {
+//    	List<WorkSessionTableDTO> workSessions=  workSessionRepository.findAllForAdmin();
+//    	EmployeeShift empShift = employeeShiftService.getEmployeeShiftsByEmpId()
+//    			.stream()
+//                .map(this::mapToDTO2)
+//                .toList();
+//    }
 
     /* ================= FILTERED ================= */
 

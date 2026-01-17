@@ -2,11 +2,13 @@ package com.educast.ems.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.educast.ems.dto.LeaveRequestDTO;
 import com.educast.ems.dto.LeaveResponseDTO;
 import com.educast.ems.models.LeaveType;
+import com.educast.ems.security.CustomUserDetails;
 import com.educast.ems.services.LeaveService;
 import com.educast.ems.services.LeaveTypeService;
 
@@ -76,6 +78,12 @@ public class LeaveController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    
+    @GetMapping("/manager")
+    public List<LeaveResponseDTO> getAllLeaveByManager(@AuthenticationPrincipal CustomUserDetails userDetails){
+    	Long managerId = userDetails.getEmployeeId();
+    	return leaveService.findEmployeeLeaveOfManagerShift(managerId);
     }
 
 }

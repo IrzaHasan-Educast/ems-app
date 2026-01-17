@@ -22,5 +22,6 @@ public class LeaveResponseDTO {
     private int duration;
     private String description;
     private String prescriptionImg;
+    private String assignedShift;
 
 }

@@ -77,6 +77,7 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/v1/leaves").hasAnyRole("EMPLOYEE", "MANAGER")
                 .requestMatchers("/api/v1/leaves/admin").hasAnyRole("ADMIN", "HR")
+                .requestMatchers("/api/v1/leaves/manager").hasRole("MANAGER")
                 .requestMatchers("/api/v1/leaves/employee/**").hasAnyRole("EMPLOYEE", "MANAGER")
                 .requestMatchers("/api/v1/leaves/types").hasAnyRole("EMPLOYEE", "ADMIN", "HR", "MANAGER")
                 .requestMatchers("/api/v1/leaves/**").hasAnyRole("ADMIN", "HR")

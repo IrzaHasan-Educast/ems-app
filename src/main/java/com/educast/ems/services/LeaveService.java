@@ -18,6 +18,8 @@ public interface LeaveService {
     List<LeaveResponseDTO> getAllLeaves();
 
     List<LeaveResponseDTO> getLeavesByEmployee(Long employeeId);
+    
+    List<LeaveResponseDTO> findEmployeeLeaveOfManagerShift(Long mangerId);
 
     List<LeaveResponseDTO> getLeavesByStatus(String status);
     

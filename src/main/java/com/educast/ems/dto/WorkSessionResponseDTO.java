@@ -20,7 +20,7 @@ public class WorkSessionResponseDTO {
     private Duration totalSessionHours; // clockOut - clockIn including breaks
     private List<BreakResponseDTO> breaks; // list of breaks in this session
     private String status;
-    
+    private String assignedShift;
     // New fields for ongoing break detection
     private Boolean onBreak;        // true if a break is ongoing
     private Long currentBreakId;  

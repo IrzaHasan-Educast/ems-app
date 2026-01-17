@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.educast.ems.dto.EmployeeShiftResponseDTO;
 import com.educast.ems.dto.LeaveRequestDTO;
 import com.educast.ems.dto.LeaveResponseDTO;
 import com.educast.ems.models.Employee;
+import com.educast.ems.models.EmployeeShift;
 import com.educast.ems.models.Leave;
 import com.educast.ems.models.LeaveStatus;
 import com.educast.ems.repositories.EmployeeRepository;
@@ -25,6 +27,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    private EmployeeShiftService employeeShiftService;
     @Override
     public LeaveResponseDTO applyLeave(LeaveRequestDTO dto) {
 
@@ -138,7 +141,19 @@ public class LeaveServiceImpl implements LeaveService {
         r.setDuration(leave.getDuration());
         r.setDescription(leave.getDescription());
         r.setPrescriptionImg(leave.getPrescriptionImg());
+//        r.setAssignedShift(this.getShiftNameByEmployeeId(leave.getEmployee().getId()));
         return r;
     }
+    
+    private String getShiftNameByEmployeeId(Long EmployeeId) {
+    	return employeeShiftService.getEmployeeShiftsByEmpId(EmployeeId).getShiftName();
+    }
+
+	@Override
+	public List<LeaveResponseDTO> findEmployeeLeaveOfManagerShift(Long mangerId) {
+		return leaveRepository.findEmployeeLeaveOfManagerShift(mangerId).stream()
+		.map(this :: mapToResponse).toList();
+		
+	}
 
 }
