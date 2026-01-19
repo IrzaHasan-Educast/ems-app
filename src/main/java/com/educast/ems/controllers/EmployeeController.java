@@ -4,15 +4,19 @@ import com.educast.ems.dto.EmployeeRequest;
 import com.educast.ems.dto.EmployeeResByRoleDTO;
 import com.educast.ems.dto.EmployeeResponse;
 import com.educast.ems.models.Employee;
+import com.educast.ems.security.CustomUserDetails;
 import com.educast.ems.services.EmployeeService;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -72,11 +76,18 @@ public class EmployeeController {
         return ResponseEntity.ok(managers);
     }
     
-    @GetMapping("manager/employees")
-    public List<Employee> findAllEmployeesForManager(Long managerId){
+    @GetMapping("/manager/employees")
+    public List<EmployeeResponse> findAllEmployeesForManager(@AuthenticationPrincipal CustomUserDetails userDetails){
+    	Long managerId = userDetails.getEmployeeId();
     	return employeeService.findAllEmployeesForManager(managerId);
     }
 
+    
+    @GetMapping("/my")
+    public ResponseEntity<Optional<EmployeeResponse>> getMyDetails(@AuthenticationPrincipal CustomUserDetails userDetails){
+    	Long empId = userDetails.getEmployeeId();
+    	return ResponseEntity.ok(employeeService.getEmployeeById(empId));
+    }
 
 
 }

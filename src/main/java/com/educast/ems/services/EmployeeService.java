@@ -1,6 +1,5 @@
 package com.educast.ems.services;
 
-import com.educast.ems.models.Employee;
 import com.educast.ems.dto.EmployeeRequest;
 import com.educast.ems.dto.EmployeeResByRoleDTO;
 import com.educast.ems.dto.EmployeeResponse;
@@ -16,6 +15,6 @@ public interface EmployeeService {
     void deleteEmployee(Long id);
     EmployeeResponse toggleActive(Long id);
 	List<EmployeeResByRoleDTO> findByRole(String role);
-	List<Employee> findAllEmployeesForManager(Long managerId);
+	List<EmployeeResponse> findAllEmployeesForManager(Long managerId);
 
 }

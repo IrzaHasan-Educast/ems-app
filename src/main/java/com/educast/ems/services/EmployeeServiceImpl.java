@@ -183,11 +183,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
     
     @Override
-    public List<Employee> findAllEmployeesForManager(Long managerId){
-    	return employeeRepository.findAllEmployeesForManager(managerId);
+    public List<EmployeeResponse> findAllEmployeesForManager(Long managerId){
+    	List<Employee> employees =  employeeRepository.findAllEmployeesForManager(managerId);
+    	return employees.stream()
+    			.map(this :: mapToDto).toList();
     }
 
-    
     private EmployeeResByRoleDTO mapToEmpRoleDto(Employee emp) {
     	EmployeeResByRoleDTO dto = new EmployeeResByRoleDTO();
     	dto.setId(emp.getId());
