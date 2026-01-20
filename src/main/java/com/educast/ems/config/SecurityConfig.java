@@ -54,7 +54,7 @@ public class SecurityConfig {
                 // Role protected routes
                 .requestMatchers("/api/v1/users/me").hasAnyRole("ADMIN", "HR", "EMPLOYEE", "MANAGER")
                 .requestMatchers("/api/v1/employees/manager/employees").hasRole("MANAGER")
-                .requestMatchers("/api/v1/employees/my").hasRole("EMPLOYEE")
+                .requestMatchers("/api/v1/employees/my").hasAnyRole("ADMIN","HR","MANAGER","EMPLOYEE")
                 .requestMatchers("/api/v1/employees/**").hasAnyRole("ADMIN", "HR")
                 
                 .requestMatchers("/api/v1/employee-shifts/shift/employee-count/**").hasRole("MANAGER")

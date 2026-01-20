@@ -372,6 +372,7 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
         WorkSessionResponseDTO dto = new WorkSessionResponseDTO();
         dto.setId(session.getId());
+        dto.setEmployeeId(session.getEmployeeId());
         dto.setEmployeeName(session.getEmployeeName());
         dto.setClockInTime(session.getClockInTime());
         dto.setClockOutTime(session.getClockOutTime());

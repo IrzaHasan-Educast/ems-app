@@ -32,6 +32,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final PasswordEncoder passwordEncoder;
     private final WorkSessionService workSession;
     private final EmployeeShiftService employeeShiftService;
+    private final ShiftService shiftService;
 
     @Override
     public List<EmployeeResponse> getAllEmployees() {
@@ -175,8 +176,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         dto.setActive(emp.isActive());
         EmployeeShiftResponseDTO empAssignedShift = this.getShiftByEmpId(emp.getId());
     	if(empAssignedShift != null) {
-//    		System.out.println(empAssignedShift.getShiftName());
+    		System.out.println(empAssignedShift.getShiftName());
     		dto.setAssignedShift(empAssignedShift.getShiftName());
+    	}else if(emp.getRole().equalsIgnoreCase("MANAGER") && shiftService.getShiftByManagerId(emp.getId())!=null) {
+    		dto.setAssignedShift(emp.getRole()+ " "+ shiftService.getShiftByManagerId(emp.getId()).getShiftName());
+    		System.out.println(shiftService.getShiftByManagerId(emp.getId()).getShiftName());
     	}
         
         return dto;

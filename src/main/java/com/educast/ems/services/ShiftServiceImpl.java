@@ -91,9 +91,13 @@ public class ShiftServiceImpl implements ShiftService{
 	
 	@Override
 	public ShiftResponseDTO getShiftByManagerId(Long managerId) {
-		Shifts shift = repo.findByManagerId(managerId);
+		try {
+		Shifts shift = repo.findByManagerId(managerId);		
 			return mapToDto(shift);
-		
+		}catch (Exception e) {
+			System.out.println("not a manager");
+		}
+		return null;
 	}
 	
 	private ShiftResponseDTO mapToDto(Shifts shift){

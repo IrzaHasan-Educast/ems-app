@@ -63,7 +63,7 @@ public class ShiftController {
     
 //    manager can get their shift details
     @GetMapping("/my")
-    public ShiftResponseDTO getMethodName(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ShiftResponseDTO getMyShift(@AuthenticationPrincipal CustomUserDetails userDetails) {
     	Long managerId = userDetails.getEmployeeId();
         return shiftService.getShiftByManagerId(managerId);
         
