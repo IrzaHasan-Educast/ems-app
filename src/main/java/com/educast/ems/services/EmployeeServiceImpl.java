@@ -160,6 +160,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     	}
     	return false;
     }
+    
     private EmployeeResponse mapToDto(Employee emp) {
         if (emp == null) return null;
 
@@ -174,14 +175,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         dto.setRole(emp.getRole());
         dto.setJoiningDate(emp.getJoiningDate());
         dto.setActive(emp.isActive());
-        EmployeeShiftResponseDTO empAssignedShift = this.getShiftByEmpId(emp.getId());
-    	if(empAssignedShift != null) {
-    		System.out.println(empAssignedShift.getShiftName());
-    		dto.setAssignedShift(empAssignedShift.getShiftName());
-    	}else if(emp.getRole().equalsIgnoreCase("MANAGER") && shiftService.getShiftByManagerId(emp.getId())!=null) {
-    		dto.setAssignedShift(emp.getRole()+ " "+ shiftService.getShiftByManagerId(emp.getId()).getShiftName());
-    		System.out.println(shiftService.getShiftByManagerId(emp.getId()).getShiftName());
-    	}
+        dto.setAssignedShift(this.getUserShiftByEmployeeId(emp.getId(), emp.getRole()));
+//        EmployeeShiftResponseDTO empAssignedShift = this.getShiftByEmpId(emp.getId());
+//    	if(empAssignedShift != null) {
+////    		System.out.println(empAssignedShift.getShiftName());
+//    		dto.setAssignedShift(empAssignedShift.getShiftName());
+//    	}else if(emp.getRole().equalsIgnoreCase("MANAGER") && shiftService.getShiftByManagerId(emp.getId())!=null) {
+//    		dto.setAssignedShift(emp.getRole()+ " "+ shiftService.getShiftByManagerId(emp.getId()).getShiftName());
+//    		System.out.println(shiftService.getShiftByManagerId(emp.getId()).getShiftName());
+//    	}
         
         return dto;
     }
@@ -193,6 +195,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     			.map(this :: mapToDto).toList();
     }
 
+    public String getUserShiftByEmployeeId(Long empId, String empRole) {
+    	EmployeeShiftResponseDTO empAssignedShift = this.getShiftByEmpId(empId);
+    	if(empAssignedShift != null) {
+    		return empAssignedShift.getShiftName();
+    	}else if(empRole.equalsIgnoreCase("MANAGER") && shiftService.getShiftByManagerId(empId)!=null) {
+    		return shiftService.getShiftByManagerId(empId).getShiftName()+ " ("+ empRole.charAt(0)+")" ;
+    	}else return "--";
+    	
+    }
     private EmployeeResByRoleDTO mapToEmpRoleDto(Employee emp) {
     	EmployeeResByRoleDTO dto = new EmployeeResByRoleDTO();
     	dto.setId(emp.getId());

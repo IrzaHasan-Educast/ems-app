@@ -8,16 +8,16 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.educast.ems.dto.EmployeeShiftResponseDTO;
 import com.educast.ems.dto.LeaveRequestDTO;
 import com.educast.ems.dto.LeaveResponseDTO;
 import com.educast.ems.models.Employee;
-import com.educast.ems.models.EmployeeShift;
 import com.educast.ems.models.Leave;
 import com.educast.ems.models.LeaveStatus;
 import com.educast.ems.repositories.EmployeeRepository;
 import com.educast.ems.repositories.LeaveRepository;
 
+import lombok.RequiredArgsConstructor;
+@RequiredArgsConstructor
 @Service
 public class LeaveServiceImpl implements LeaveService {
 
@@ -28,6 +28,7 @@ public class LeaveServiceImpl implements LeaveService {
     private EmployeeRepository employeeRepository;
 
     private EmployeeShiftService employeeShiftService;
+    private final EmployeeService employeeService;
     @Override
     public LeaveResponseDTO applyLeave(LeaveRequestDTO dto) {
 
@@ -36,7 +37,6 @@ public class LeaveServiceImpl implements LeaveService {
 
         Leave leave = new Leave();
         leave.setEmployee(emp);
-//        System.out.println(dto.getEndDate());
         leave.setStartDate(dto.getStartDate());
         leave.setEndDate(dto.getEndDate());
         leave.setDuration(dto.getDuration());
@@ -142,12 +142,13 @@ public class LeaveServiceImpl implements LeaveService {
         r.setDescription(leave.getDescription());
         r.setPrescriptionImg(leave.getPrescriptionImg());
 //        r.setAssignedShift(this.getShiftNameByEmployeeId(leave.getEmployee().getId()));
+        r.setAssignedShift(employeeService.getUserShiftByEmployeeId(leave.getEmployee().getId(), leave.getEmployee().getRole()));
         return r;
     }
     
-    private String getShiftNameByEmployeeId(Long EmployeeId) {
-    	return employeeShiftService.getEmployeeShiftsByEmpId(EmployeeId).getShiftName();
-    }
+//    private String getShiftNameByEmployeeId(Long EmployeeId) {
+//    	return employeeShiftService.getEmployeeShiftsByEmpId(EmployeeId).getShiftName();
+//    }
 
 	@Override
 	public List<LeaveResponseDTO> findEmployeeLeaveOfManagerShift(Long mangerId) {

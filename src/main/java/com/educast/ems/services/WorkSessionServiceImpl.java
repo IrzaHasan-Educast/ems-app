@@ -1,6 +1,8 @@
 package com.educast.ems.services;
 
 import com.educast.ems.dto.BreakResponseDTO;
+import com.educast.ems.dto.EmployeeResponse;
+import com.educast.ems.dto.EmployeeShiftResponseDTO;
 import com.educast.ems.dto.WorkSessionEmployeeTableDTO;
 import com.educast.ems.dto.WorkSessionRequestDTO;
 import com.educast.ems.dto.WorkSessionResponseDTO;
@@ -27,6 +29,11 @@ public class WorkSessionServiceImpl implements WorkSessionService {
 
     private final WorkSessionRepository workSessionRepository;
     private final EmployeeRepository employeeRepository;
+    private final ShiftService shiftService;
+    private final EmployeeShiftService employeeShiftService;
+
+
+//    private final EmployeeService employeeService;
 
     /* ================= CLOCK IN ================= */
 
@@ -393,6 +400,7 @@ public class WorkSessionServiceImpl implements WorkSessionService {
                     )
             );
         }
+        
 
         if (session.getIdleHours() != null) {
             dto.setIdleTime(
@@ -401,9 +409,29 @@ public class WorkSessionServiceImpl implements WorkSessionService {
                     )
             );
         }
-
-
+        dto.setAssignedShift(this.getUserShiftByEmployeeId(session.getEmployeeId(), getEmpRoleByEmpId(session.getEmployeeId())));
         return dto;
+    }
+    
+    public String getUserShiftByEmployeeId(Long empId, String empRole) {
+    	EmployeeShiftResponseDTO empAssignedShift = this.getShiftByEmpId(empId);
+    	if(empAssignedShift != null) {
+    		return empAssignedShift.getShiftName();
+    	}else if(empRole.equalsIgnoreCase("MANAGER") && shiftService.getShiftByManagerId(empId)!=null) {
+    		return shiftService.getShiftByManagerId(empId).getShiftName()+ " ("+ empRole.charAt(0)+")" ;
+    	}else return "--";
+    	
+    }
+    private String getEmpRoleByEmpId(Long empId) {
+        Employee emp = employeeRepository.findById(empId)
+        		.orElseThrow(()-> new RuntimeException("No employee found with id"+empId));
+        return emp.getRole();
+        
+    }
+    
+    private EmployeeShiftResponseDTO getShiftByEmpId(Long empId) {
+    	return employeeShiftService.getEmployeeShiftsByEmpId(empId);
+    	
     }
 
     private WorkSessionResponseDTO mapEmployeeTableDTO(WorkSessionEmployeeTableDTO s) {

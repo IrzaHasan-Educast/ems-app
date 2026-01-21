@@ -8,6 +8,7 @@ public class WorkSessionTableDTO {
     private Long id;
     private Long employeeId;
     private String employeeName;
+    String role;
     private LocalDateTime clockInTime;
     private LocalDateTime clockOutTime;
     private Double totalWorkingHours;
@@ -15,13 +16,14 @@ public class WorkSessionTableDTO {
     private Double totalSessionHours;
     private String status;
 
-    public WorkSessionTableDTO(Long id,Long empId, String employeeName,
+    public WorkSessionTableDTO(Long id,Long empId, String employeeName, String role,
                                LocalDateTime clockInTime, LocalDateTime clockOutTime,
                                Double totalWorkingHours, Double idleHours,
                                Double totalSessionHours, String status) {
         this.id = id;
         this.employeeId = empId;
         this.employeeName = employeeName;
+        this.role = role;
         this.clockInTime = clockInTime;
         this.clockOutTime = clockOutTime;
         this.totalWorkingHours = totalWorkingHours;

@@ -16,5 +16,6 @@ public interface EmployeeService {
     EmployeeResponse toggleActive(Long id);
 	List<EmployeeResByRoleDTO> findByRole(String role);
 	List<EmployeeResponse> findAllEmployeesForManager(Long managerId);
+	String getUserShiftByEmployeeId(Long empId, String EmpRole);
 
 }

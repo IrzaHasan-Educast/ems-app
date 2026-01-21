@@ -54,6 +54,7 @@ public interface WorkSessionRepository extends JpaRepository<WorkSession, Long> 
     		    ws.id,
     		    e.id,
     		    e.fullName,
+    		    e.role,
     		    ws.clockIn,
     		    ws.clockOut,
     		    ws.totalHours,
