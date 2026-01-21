@@ -91,4 +91,10 @@ public class EmployeeShiftController {
     	Long managerId = userDetails.getEmployeeId();
     	return employeeShiftService.listOfEmpByManagerId(managerId);
     }
+    
+    @GetMapping("/my")
+    public EmployeeShiftResponseDTO getMyAssignedShift(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    	Long empId= userDetails.getEmployeeId();
+    	return employeeShiftService.getEmployeeShiftsByEmpId(empId);
+    }
 }
