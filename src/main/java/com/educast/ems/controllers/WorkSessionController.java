@@ -77,11 +77,11 @@ public class WorkSessionController {
      }
      
 
+//     WS GetSession ByEmployeeId
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
          WorkSessionResponseDTO responseDTO = workSessionService.getSessionById(id);
          return ResponseEntity.ok(responseDTO);
-//        return ResponseEntity.ok("Service not implemented yet"); // Temporary
     }
     
     @GetMapping("/active")

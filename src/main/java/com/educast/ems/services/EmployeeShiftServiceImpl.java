@@ -122,6 +122,8 @@ public class EmployeeShiftServiceImpl implements EmployeeShiftService {
 		dto.setEmpName(empShift.getEmployee().getFullName());
 		dto.setShiftId(empShift.getShift().getId());
 		dto.setShiftName(empShift.getShift().getShiftName());
+		dto.setStartsAt(empShift.getShift().getStartsAt());
+		dto.setEndsAt(empShift.getShift().getEndsAt());
 		
 		return dto;
 	}
