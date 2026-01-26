@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.educast.ems.dto.AttendanceResponseDTO;
 import com.educast.ems.dto.EmployeeShiftResponseDTO;
+import com.educast.ems.dto.ShiftResponseDTO;
 import com.educast.ems.models.Attendance;
 import com.educast.ems.models.Employee;
 import com.educast.ems.models.Shift;
@@ -29,6 +30,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Autowired
     private EmployeeShiftService empShiftService;
+    
+    @Autowired
+    private ShiftService shiftService;
     
     @Override
     public void createAttendance(Long id) {
@@ -137,9 +141,14 @@ public class AttendanceServiceImpl implements AttendanceService {
         dto.setPresent(attendance.isPresent());
         dto.setShift(attendance.getShift());
         if(this.getShiftByEmpId(attendance.getEmployee().getId())!= null) {
-//        System.out.println(this.getShiftByEmpId(attendance.getEmployee().getId()).getShiftName());
         dto.setAssignedShift(this.getShiftByEmpId(attendance.getEmployee().getId()).getShiftName());}
-        
+        else {
+        	ShiftResponseDTO shift = shiftService.getShiftByManagerId(attendance.getEmployee().getId());
+        	if(shift != null) {
+        		dto.setAssignedShift(shift.getShiftName());
+        	}
+        	
+        }
         return dto;
     }
     
