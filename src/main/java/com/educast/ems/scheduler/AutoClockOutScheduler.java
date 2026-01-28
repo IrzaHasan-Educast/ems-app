@@ -22,12 +22,12 @@ public class AutoClockOutScheduler {
 
    
 
-    // Morning job: 6 AM, 10-hour range (8 PM previous day → 6 AM)
-    @Scheduled(cron = "0 0 6 * * ?", zone = "Asia/Karachi")
+    // Morning job: 8 AM, 12-hour range (8 PM previous day → 6 AM)
+    @Scheduled(cron = "0 0 8 * * ?", zone = "Asia/Karachi")
     @Transactional
     public void autoClockOutMorning() {
         LocalDateTime now = LocalDateTime.now(PK_ZONE);
-        LocalDateTime windowStart = now.minusHours(10);
+        LocalDateTime windowStart = now.minusHours(12);
 
         List<WorkSession> sessions = autoClockOutService.getSessionsForAutoClockOut(windowStart);
         sessions.forEach(autoClockOutService::autoClockOutSession);
