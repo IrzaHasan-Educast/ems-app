@@ -15,9 +15,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+//import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 @Configuration
 @RequiredArgsConstructor
@@ -85,7 +85,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/leaves/manager").hasRole("MANAGER")
                 .requestMatchers("/api/v1/leaves/employee/**").hasAnyRole("EMPLOYEE", "MANAGER")
                 .requestMatchers("/api/v1/leaves/types").hasAnyRole("EMPLOYEE", "ADMIN", "HR", "MANAGER")
-                .requestMatchers("/api/v1/leaves/**").hasAnyRole("ADMIN", "HR")
+                .requestMatchers("/api/v1/leaves/**").hasAnyRole("ADMIN", "HR", "MANAGER")
 
                 .anyRequest().authenticated()
             );
@@ -100,13 +100,13 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Allow multiple origins separated by comma in properties
-        List<String> origins = Arrays.stream(frontendUrl.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
-
-        configuration.setAllowedOrigins(origins);
-//        configuration.setAllowedOrigins(List.of(frontendUrl));
+//        List<String> origins = Arrays.stream(frontendUrl.split(","))
+//                .map(String::trim)
+//                .filter(s -> !s.isEmpty())
+//                .collect(Collectors.toList());
+//
+//        configuration.setAllowedOrigins(origins);
+        configuration.setAllowedOrigins(List.of(frontendUrl));
         configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
